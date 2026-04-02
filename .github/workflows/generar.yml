@@ -1,11 +1,14 @@
 name: Generar Copy con IA
 
 on:
-  workflow_dispatch: # Esto crea un botón manual para ejecutarlo
+  workflow_dispatch:
 
 jobs:
   crear-copy:
     runs-on: ubuntu-latest
+    env:
+      # Esto le dice a GitHub que use la nueva versión para sus herramientas internas
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
     steps:
       - name: Clonar el repositorio
         uses: actions/checkout@v4
@@ -13,7 +16,7 @@ jobs:
       - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24' # Actualizamos nuestro entorno a la versión 24
 
       - name: Instalar dependencias
         run: npm install
