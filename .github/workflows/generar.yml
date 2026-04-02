@@ -1,0 +1,32 @@
+name: Generar Copy con IA
+
+on:
+  workflow_dispatch: # Esto crea un botón manual para ejecutarlo
+
+jobs:
+  crear-copy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Ejecutar el Cerebro IA
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node generate-copy.js
+
+      - name: Guardar el resultado en GitHub
+        run: |
+          git config --global user.name "IA Agent"
+          git config --global user.email "bot@andremolli.com"
+          git add post-generado.txt
+          git commit -m "🤖 Nuevo copy generado" || echo "No hay cambios"
+          git push
