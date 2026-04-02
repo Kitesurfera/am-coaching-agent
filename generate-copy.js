@@ -7,7 +7,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 async function generarCopy() {
   const prompt = `
     Eres el copywriter de 'Andre Molli', una entrenadora física online y presencial.
-    Escribe un pie de foto para Instagram (máximo 4 párrafos cortos).
+    Escribe un pie de foto para Instagram (máximo 4 párrafos muy cortos).
     El tono debe ser motivacional, profesional, directo y hablar sobre disciplina y movimiento inteligente.
     No uses saludos. Termina con un Call to Action para mandar un mensaje y pedir más información y añade 5 hashtags relevantes.
   `;
