@@ -3,11 +3,15 @@ name: Generar Copy con IA
 on:
   workflow_dispatch:
 
+# Añadimos permisos para que el bot pueda crear Issues
+permissions:
+  contents: write
+  issues: write
+
 jobs:
-  crear-copy:
+  crear-copy-y-revision:
     runs-on: ubuntu-latest
     env:
-      # Esto le dice a GitHub que use la nueva versión para sus herramientas internas
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
     steps:
       - name: Clonar el repositorio
@@ -16,7 +20,7 @@ jobs:
       - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24' # Actualizamos nuestro entorno a la versión 24
+          node-version: '24'
 
       - name: Instalar dependencias
         run: npm install
@@ -33,3 +37,11 @@ jobs:
           git add post-generado.txt
           git commit -m "🤖 Nuevo copy generado" || echo "No hay cambios"
           git push
+
+      - name: Crear Panel de Revisión (Issue)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "📝 Revisar Post del $(date +'%d/%m/%Y')" \
+            --body-file post-generado.txt
