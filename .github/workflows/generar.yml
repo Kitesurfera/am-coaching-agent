@@ -2,6 +2,11 @@ name: Generar Copy y Video con IA
 
 on:
   workflow_dispatch:
+    inputs:
+      archivo_media:
+        description: 'Nombre del archivo que subiste a la carpeta public (ej: clip1.mp4 o foto.jpg)'
+        required: true
+        default: 'clip1.mp4'
 
 permissions:
   contents: write
@@ -24,7 +29,7 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
-      - name: Asegurar dependencias de video (Browser)
+      - name: Asegurar dependencias de video
         run: npx remotion browser ensure
 
       - name: Ejecutar el Cerebro IA (Copy)
@@ -32,8 +37,8 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node generate-copy.js
 
-      - name: Renderizar Video con Remotion 🎬
-        run: npx remotion render src/index.jsx MiVideo ReelAndre.mp4
+      - name: Renderizar Video sobre tu archivo 🎬
+        run: npx remotion render src/index.jsx MiVideo ReelAndre.mp4 --props='{"archivo": "${{ github.event.inputs.archivo_media }}"}'
 
       - name: Subir Video como Artefacto a GitHub
         uses: actions/upload-artifact@v4
@@ -49,19 +54,17 @@ jobs:
           git commit -m "🤖 Nuevo copy generado" || echo "No hay cambios"
           git push
 
-      - name: Crear Panel de Revisión (Issue con Video)
+      - name: Crear Panel de Revisión (Issue)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          
           echo "## 📝 Copy Generado" > issue_body.md
           cat post-generado.txt >> issue_body.md
           echo "" >> issue_body.md
           echo "---" >> issue_body.md
-          echo "## 🎬 Reel Generado" >> issue_body.md
-          echo "El video se ha renderizado correctamente." >> issue_body.md
-          echo "📥 **[Haz clic aquí para descargar y ver el Reel]($RUN_URL)** (Ve a la sección 'Artifacts' al final de la página)." >> issue_body.md
+          echo "## 🎬 Reel Generado sobre: ${{ github.event.inputs.archivo_media }}" >> issue_body.md
+          echo "📥 **[Haz clic aquí para descargar y ver el resultado]($RUN_URL)**" >> issue_body.md
           
           gh issue create \
             --title "🚀 Revisar Publicación del $(date +'%d/%m/%Y')" \
