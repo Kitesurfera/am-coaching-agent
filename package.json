@@ -1,0 +1,7 @@
+{
+  "name": "andre-molli-agent",
+  "type": "module",
+  "dependencies": {
+    "@google/genai": "^0.1.2"
+  }
+}
