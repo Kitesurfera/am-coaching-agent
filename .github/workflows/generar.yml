@@ -1,15 +1,14 @@
-name: Generar Copy con IA
+name: Generar Copy y Video con IA
 
 on:
   workflow_dispatch:
 
-# Añadimos permisos para que el bot pueda crear Issues
 permissions:
   contents: write
   issues: write
 
 jobs:
-  crear-copy-y-revision:
+  crear-copy-y-video:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
@@ -25,12 +24,24 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
-      - name: Ejecutar el Cerebro IA
+      - name: Asegurar dependencias de video (Browser)
+        run: npx remotion browser ensure
+
+      - name: Ejecutar el Cerebro IA (Copy)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node generate-copy.js
 
-      - name: Guardar el resultado en GitHub
+      - name: Renderizar Video con Remotion 🎬
+        run: npx remotion render src/index.jsx MiVideo ReelAndre.mp4
+
+      - name: Subir Video como Artefacto a GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: Reel-Andre-Molli
+          path: ReelAndre.mp4
+
+      - name: Guardar texto en el código
         run: |
           git config --global user.name "IA Agent"
           git config --global user.email "bot@andremolli.com"
@@ -38,10 +49,20 @@ jobs:
           git commit -m "🤖 Nuevo copy generado" || echo "No hay cambios"
           git push
 
-      - name: Crear Panel de Revisión (Issue)
+      - name: Crear Panel de Revisión (Issue con Video)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          echo "## 📝 Copy Generado" > issue_body.md
+          cat post-generado.txt >> issue_body.md
+          echo "" >> issue_body.md
+          echo "---" >> issue_body.md
+          echo "## 🎬 Reel Generado" >> issue_body.md
+          echo "El video se ha renderizado correctamente." >> issue_body.md
+          echo "📥 **[Haz clic aquí para descargar y ver el Reel]($RUN_URL)** (Ve a la sección 'Artifacts' al final de la página)." >> issue_body.md
+          
           gh issue create \
-            --title "📝 Revisar Post del $(date +'%d/%m/%Y')" \
-            --body-file post-generado.txt
+            --title "🚀 Revisar Publicación del $(date +'%d/%m/%Y')" \
+            --body-file issue_body.md
