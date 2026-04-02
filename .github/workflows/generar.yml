@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       archivo_media:
-        description: 'Nombre del archivo que subiste a la carpeta public (ej: clip1.mp4 o foto.jpg)'
+        description: 'Nombre del archivo en la carpeta public (ej: entreno1.mp4)'
         required: true
-        default: 'clip1.mp4'
+        default: 'entreno1.mp4'
 
 permissions:
   contents: write
