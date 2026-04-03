@@ -16,6 +16,16 @@ Queremos que nuestros textos usen analogías universales sobre el movimiento, la
 - **La Cadena (El Engranaje):** El cuerpo es un sistema conectado. Un eslabón débil afecta a toda la estructura. Destaca cómo la movilidad de una articulación impacta en el rendimiento global.
 - **El Equilibrio (Tensión vs. Relajación):** Saber cuándo aplicar máxima tensión y cuándo relajar. El movimiento inteligente es eficiente, no solo cansado.
 
-## 4. Formato
+## 4. Estrategia de Contenido (Para Agente 3)
+Para planificar la semana, sigue este esquema de pilares:
+- **Lunes (Arranque):** Reel motivador sobre "Cimientos" o "Mentalidad de Movimiento".
+- **Martes (Educativo):** Carrusel técnico sobre "La Cadena" (biomecánica).
+- **Miércoles (Hábito):** Reel corto con un ejercicio específico de "Fluidez".
+- **Jueves (Conexión):** Carrusel sobre "Equilibrio" (recuperación o movilidad).
+- **Viernes (Reto):** Reel dinámico para poner a prueba la fuerza.
+- **Sábado (Lifestyle):** Texto reflexivo sobre salud y vitalidad.
+- **Domingo (Revisión):** Preparación para la siguiente semana.
+
+## 5. Formato
 - Textos limpios, párrafos cortos.
 - Uso elegante de emojis (🤍, ⚡, 🧬, 🧱...), sin saturar.
