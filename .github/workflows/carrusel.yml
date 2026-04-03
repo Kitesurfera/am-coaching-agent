@@ -1,0 +1,79 @@
+name: Generar Carrusel IA
+
+on:
+  workflow_dispatch:
+    inputs:
+      tema:
+        description: 'Tema del carrusel (ej. 3 errores de postura, La inercia en tu entreno...)'
+        required: true
+        default: 'Claves del movimiento'
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  crear-carrusel:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Asegurar dependencias de renderizado
+        run: npx remotion browser ensure
+
+      - name: 🧠 Ejecutar el Cerebro IA (Guion)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TEMA_CARRUSEL: ${{ github.event.inputs.tema }}
+        run: node generate-carrusel.js
+
+      - name: 🎨 Renderizar las 4 imágenes
+        run: |
+          mkdir -p carrusel_out
+          node -e "
+          const fs = require('fs');
+          const { execSync } = require('child_process');
+          const data = JSON.parse(fs.readFileSync('carrusel.json'));
+          data.forEach((slide, i) => {
+            const props = JSON.stringify({ titulo: slide.titulo, contenido: slide.contenido, numero: i + 1, total: data.length });
+            fs.writeFileSync('props.json', props);
+            console.log('Renderizando slide ' + (i+1));
+            // Renderizamos una imagen fija (.png) usando el diseño del Carrusel
+            execSync('npx remotion still src/index.jsx Carrusel carrusel_out/slide_' + (i+1) + '.png --props=props.json', {stdio: 'inherit'});
+          });
+          "
+
+      - name: 📦 Comprimir en un ZIP
+        run: zip -r carrusel_generado.zip carrusel_out/
+
+      - name: ☁️ Subir ZIP a GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: Carrusel-Andre-Molli
+          path: carrusel_generado.zip
+
+      - name: 📝 Crear Panel de Revisión (Issue)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEMA: ${{ github.event.inputs.tema }}
+        run: |
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "## 🎠 Carrusel Generado: $TEMA" > issue_body.md
+          echo "El guion ha sido redactado aplicando nuestra filosofía de movimiento." >> issue_body.md
+          echo "" >> issue_body.md
+          echo "📥 **[Haz clic aquí para descargar el ZIP con las imágenes listas para Instagram]($RUN_URL)**" >> issue_body.md
+          
+          gh issue create \
+            --title "🎠 Revisar Carrusel del $(date +'%d/%m/%Y')" \
+            --body-file issue_body.md
