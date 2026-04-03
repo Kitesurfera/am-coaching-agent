@@ -1,5 +1,4 @@
 import React from "react";
-// 1. Añadimos staticFile en la importación
 import { Composition, AbsoluteFill, Img, getInputProps, staticFile } from "remotion";
 
 const Diapositiva = () => {
@@ -14,7 +13,6 @@ const Diapositiva = () => {
 
       {/* Logo arriba a la izquierda */}
       <AbsoluteFill style={{ justifyContent: "flex-start", alignItems: "flex-start", padding: "50px" }}>
-        {/* 2. Usamos staticFile para que Remotion encuentre el logo en la carpeta public */}
         <Img src={staticFile("logo.png")} style={{ height: "80px", objectFit: "contain" }} />
       </AbsoluteFill>
 
@@ -53,6 +51,8 @@ export const RemotionCarrusel = () => {
       component={Diapositiva}
       width={1080}
       height={1350} 
+      durationInFrames={1} // ¡Añadido para evitar el error de Remotion!
+      fps={30}             // ¡Añadido para evitar el error de Remotion!
       defaultProps={{ 
         titulo: "TÍTULO DE PRUEBA", 
         contenido: "Este es el contenido de la diapositiva generado por la IA.", 
