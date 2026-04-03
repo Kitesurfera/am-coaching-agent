@@ -1,15 +1,23 @@
 import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 
-// Conectar con la API usando el secreto de GitHub
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-async function generarCopy() {
+async function generar() {
+  // 1. El agente lee la Biblia de la marca
+  const cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8');
+
+  // 2. Construimos la instrucción maestra
   const prompt = `
-    Eres el copywriter de 'Andre Molli', una entrenadora física online y presencial.
-    Escribe un pie de foto para Instagram (máximo 4 párrafos muy cortos).
-    El tono debe ser motivacional, profesional, directo y hablar sobre disciplina y movimiento inteligente.
-    No uses saludos. Termina con un Call to Action para mandar un mensaje y pedir más información y añade 5 hashtags relevantes.
+  Eres el redactor experto y estratega de contenido para la cuenta de Instagram de Andre Molli.
+  
+  Aquí tienes nuestra Biblia de Marca. Debes absorber esta identidad y respetarla al 100%:
+  ${cerebroMarca}
+
+  TU TAREA:
+  Escribe un copy para Instagram (máximo 150 palabras) que acompañe a un video de entrenamiento físico. 
+  Aplica orgánicamente nuestras metáforas (inercia, aterrizajes estables o conexión de los pies) para explicar la importancia del control en el ejercicio de hoy.
+  Añade un llamado a la acción (hook) potente al principio y hashtags relevantes al final.
   `;
 
   try {
@@ -18,15 +26,12 @@ async function generarCopy() {
       contents: prompt,
     });
     
-    const textoGenerado = response.text;
-    
-    // Guardar el texto en un archivo
-    fs.writeFileSync('post-generado.txt', textoGenerado);
-    console.log("¡Copy generado con éxito! Revisa el archivo post-generado.txt");
-    
+    fs.writeFileSync('post-generado.txt', response.text);
+    console.log("✅ Copy generado con éxito usando el Cerebro de Marca.");
   } catch (error) {
     console.error("Error al generar el copy:", error);
+    fs.writeFileSync('post-generado.txt', "Error al conectar con el cerebro de IA.");
   }
 }
 
-generarCopy();
+generar();
