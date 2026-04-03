@@ -1,0 +1,34 @@
+name: Agente Planificador Semanal
+
+on:
+  workflow_dispatch:
+    inputs:
+      enfoque:
+        description: 'Enfoque de la semana'
+        required: true
+        default: 'Fuerza y Estabilidad'
+
+permissions:
+  contents: write
+
+jobs:
+  planificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install
+      - name: 🧠 Generar Plan
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ENFOQUE_SEMANAL: ${{ github.event.inputs.enfoque }}
+        run: node generate-plan.js
+      - name: 💾 Guardar en Repositorio
+        run: |
+          git config --global user.name "IA Planner"
+          git config --global user.email "planner@andremolli.com"
+          git add plan-semanal.json
+          git commit -m "📅 Nueva planificación semanal" || echo "No hay cambios"
+          git push
