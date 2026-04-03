@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       archivo_media:
-        description: 'Nombre del archivo en la carpeta public (ej: entreno1.mp4)'
+        description: 'Archivo (ej: entreno1.mp4)'
         required: true
         default: 'entreno1.mp4'
 
@@ -18,58 +18,22 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
     steps:
-      - name: Clonar el repositorio
-        uses: actions/checkout@v4
-
-      - name: Instalar Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '24'
-
-      - name: Instalar dependencias
-        run: npm install
-
-      - name: Asegurar dependencias de video
-        run: npx remotion browser ensure
-
-      - name: Ejecutar el Cerebro IA (Copy)
+      - run: npm install
+      - run: npx remotion browser ensure
+      - name: 🧠 IA Copy
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node generate-copy.js
-
-      - name: Renderizar Video sobre tu archivo 🎬
+      - name: 🎬 Renderizar Video
         env:
           ARCHIVO_MEDIA: ${{ github.event.inputs.archivo_media }}
         run: >
           npx remotion render src/index.jsx MiVideo ReelAndre.mp4 --props="{\"archivo\":\"$ARCHIVO_MEDIA\"}"
-
-      - name: Subir Video como Artefacto a GitHub
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: Reel-Andre-Molli
           path: ReelAndre.mp4
-
-      - name: Guardar texto en el código
-        run: |
-          git config --global user.name "IA Agent"
-          git config --global user.email "bot@andremolli.com"
-          git add post-generado.txt
-          git commit -m "🤖 Nuevo copy generado" || echo "No hay cambios"
-          git push
-
-      - name: Crear Panel de Revisión (Issue)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ARCHIVO_MEDIA: ${{ github.event.inputs.archivo_media }}
-        run: |
-          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          echo "## 📝 Copy Generado" > issue_body.md
-          cat post-generado.txt >> issue_body.md
-          echo "" >> issue_body.md
-          echo "---" >> issue_body.md
-          echo "## 🎬 Reel Generado sobre: $ARCHIVO_MEDIA" >> issue_body.md
-          echo "📥 **[Haz clic aquí para descargar y ver el resultado]($RUN_URL)**" >> issue_body.md
-          
-          gh issue create \
-            --title "🚀 Revisar Publicación del $(date +'%d/%m/%Y')" \
-            --body-file issue_body.md
