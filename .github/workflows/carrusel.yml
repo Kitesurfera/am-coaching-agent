@@ -1,79 +1,145 @@
-name: Generar Carrusel IA
+import React from "react";
+import { Composition, AbsoluteFill, Img, getInputProps, staticFile } from "remotion";
 
-on:
-  workflow_dispatch:
-    inputs:
-      tema:
-        description: 'Tema del carrusel (ej. 3 errores de postura, La inercia en tu entreno...)'
-        required: true
-        default: 'Claves del movimiento'
+const colores = {
+  vitalidad: '#2299AF',
+  carbon: '#404000',
+  blanco: '#FFFFFF',
+  gris: '#111111',
+};
 
-permissions:
-  contents: write
-  issues: write
+// Componente para los gráficos aesthetic técnicos
+const GraficoTecnico = ({ tipo }) => {
+  const estiloGrid = { stroke: 'rgba(255,255,255,0.05)', strokeWidth: 1 };
+  const estiloEnergy = { stroke: colores.vitalidad, strokeWidth: 3, fill: 'none' };
+  const estiloBase = { fill: 'rgba(255,255,255,0.05)', stroke: 'rgba(255,255,255,0.2)', strokeWidth: 1 };
 
-jobs:
-  crear-carrusel:
-    runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
-    steps:
-      - name: Clonar el repositorio
-        uses: actions/checkout@v4
+  return (
+    <AbsoluteFill style={{ zIndex: 1, padding: "10%" }}>
+      {/* 1. Fondo técnico grid universal */}
+      <svg width="100%" height="100%" viewBox="0 0 100 100" style={{ opacity: 0.3 }}>
+        <defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" {...estiloGrid}/></pattern></defs>
+        <rect width="100" height="100" fill="url(#grid)" />
+      </svg>
 
-      - name: Instalar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
+      {/* 2. Gráfico específico decidido por la IA */}
+      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", paddingTop: "40%" }}>
+        {tipo === 'cimientos' && (
+          <svg width="200" height="200" viewBox="0 0 100 100" style={{ opacity: 0.5 }}>
+            <rect x="20" y="70" width="60" height="15" rx="2" {...estiloBase} />
+            <path d="M 50 70 L 50 40 Q 50 20 70 20" {...estiloEnergy} />
+            <circle cx="50" cy="70" r="3" fill={colores.vitalidad} />
+          </svg>
+        )}
+        {tipo === 'fluidez' && (
+          <svg width="250" height="200" viewBox="0 0 100 100" style={{ opacity: 0.8 }}>
+            <path d="M 0 50 Q 25 20, 50 50 T 100 50" {...estiloEnergy} style={{...estiloEnergy, strokeWidth: 4}} />
+            <path d="M 0 60 Q 25 30, 50 60 T 100 60" {...estiloEnergy} style={{...estiloEnergy, opacity: 0.3}} />
+          </svg>
+        )}
+        {tipo === 'cadena' && (
+          <svg width="200" height="200" viewBox="0 0 100 100" style={{ opacity: 0.6 }}>
+            <circle cx="30" cy="50" r="8" {...estiloBase} />
+            <rect x="38" y="47" width="24" height="6" rx="2" fill={colores.blanco} style={{opacity: 0.1}} />
+            <circle cx="70" cy="50" r="8" {...estiloBase} />
+            <path d="M 38 50 L 62 50" {...estiloEnergy} />
+          </svg>
+        )}
+        {tipo === 'equilibrio' && (
+          <svg width="200" height="200" viewBox="0 0 100 100" style={{ opacity: 0.7 }}>
+            <path d="M 20 70 L 80 70" {...estiloBase} />
+            <path d="M 50 70 L 50 30" {...estiloBase} />
+            <circle cx="20" cy="50" r="5" {...estiloBase} fill={colores.vitalidad} style={{opacity: 1}} />
+            <circle cx="80" cy="50" r="5" {...estiloBase} />
+            <path d="M 20 50 L 80 50" {...estiloEnergy} />
+          </svg>
+        )}
+        {tipo === 'estructura_grid' && (
+          <svg width="200" height="200" viewBox="0 0 100 100" style={{ opacity: 0.2 }}>
+            <rect x="10" y="10" width="80" height="80" rx="4" {...estiloBase} />
+            <line x1="10" y1="50" x2="90" y2="50" {...estiloGrid} />
+            <line x1="50" y1="10" x2="50" y2="90" {...estiloGrid} />
+          </svg>
+        )}
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
 
-      - name: Instalar dependencias
-        run: npm install
+const Diapositiva = () => {
+  const { titulo, contenido, numero, total, grafico_tipo } = getInputProps();
 
-      - name: Asegurar dependencias de renderizado
-        run: npx remotion browser ensure
+  return (
+    <AbsoluteFill style={{ backgroundColor: colores.gris, overflow: 'hidden' }}>
+      
+      {/* 1. Fondo degradado sutil */}
+      <AbsoluteFill style={{
+        background: `radial-gradient(circle at 70% 30%, rgba(34, 153, 175, 0.15) 0%, rgba(17, 17, 17, 0) 60%)`,
+        zIndex: 0
+      }} />
 
-      - name: 🧠 Ejecutar el Cerebro IA (Guion)
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          TEMA_CARRUSEL: ${{ github.event.inputs.tema }}
-        run: node generate-carrusel.js
+      {/* 2. Gráficos técnicos */}
+      <GraficoTecnico tipo={grafico_tipo} />
 
-      - name: 🎨 Renderizar las 4 imágenes
-        run: |
-          mkdir -p carrusel_out
-          node -e "
-          const fs = require('fs');
-          const { execSync } = require('child_process');
-          const data = JSON.parse(fs.readFileSync('carrusel.json'));
-          data.forEach((slide, i) => {
-            const props = JSON.stringify({ titulo: slide.titulo, contenido: slide.contenido, numero: i + 1, total: data.length });
-            fs.writeFileSync('props.json', props);
-            console.log('Renderizando slide ' + (i+1));
-            // Renderizamos una imagen fija (.png) usando el diseño del Carrusel
-            execSync('npx remotion still src/index.jsx Carrusel carrusel_out/slide_' + (i+1) + '.png --props=props.json', {stdio: 'inherit'});
-          });
-          "
+      {/* 3. Contenido (Z-Index alto) */}
+      <AbsoluteFill style={{ padding: "8%", zIndex: 10 }}>
+        
+        {/* Numeración */}
+        <AbsoluteFill style={{ justifyContent: "flex-start", alignItems: "flex-end", padding: "50px" }}>
+           <span style={{ color: colores.vitalidad, fontSize: "40px", fontValue: "500", fontFamily: "sans-serif" }}>{numero} / {total}</span>
+        </AbsoluteFill>
 
-      - name: 📦 Comprimir en un ZIP
-        run: zip -r carrusel_generado.zip carrusel_out/
+        {/* Logo */}
+        <AbsoluteFill style={{ justifyContent: "flex-start", alignItems: "flex-start", padding: "50px" }}>
+          <Img src={staticFile("logo.png")} style={{ height: "70px", objectFit: "contain" }} />
+        </AbsoluteFill>
 
-      - name: ☁️ Subir ZIP a GitHub
-        uses: actions/upload-artifact@v4
-        with:
-          name: Carrusel-Andre-Molli
-          path: carrusel_generado.zip
+        {/* Textos */}
+        <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: "10%", paddingTop: "15%" }}>
+          <h1 style={{ 
+            color: colores.blanco, 
+            fontSize: "65px", 
+            textAlign: "center", 
+            marginBottom: "30px", 
+            textTransform: "uppercase", 
+            fontFamily: "sans-serif", 
+            fontWeight: "black",
+            letterSpacing: "-0.02em",
+            textShadow: "0px 4px 10px rgba(0,0,0,0.4)" 
+          }}>
+            {titulo}
+          </h1>
+          <p style={{ 
+            color: colores.blanco, 
+            fontSize: "40px", 
+            textAlign: "center", 
+            lineHeight: "1.6", 
+            fontFamily: "sans-serif", 
+            fontWeight: "normal",
+            opacity: 0.9 
+          }}>
+            {contenido}
+          </p>
+        </AbsoluteFill>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
 
-      - name: 📝 Crear Panel de Revisión (Issue)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TEMA: ${{ github.event.inputs.tema }}
-        run: |
-          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          echo "## 🎠 Carrusel Generado: $TEMA" > issue_body.md
-          echo "El guion ha sido redactado aplicando nuestra filosofía de movimiento." >> issue_body.md
-          echo "" >> issue_body.md
-          echo "📥 **[Haz clic aquí para descargar el ZIP con las imágenes listas para Instagram]($RUN_URL)**" >> issue_body.md
-          
-          gh issue create \
-            --title "🎠 Revisar Carrusel del $(date +'%d/%m/%Y')" \
-            --body-file issue_body.md
+export const RemotionCarrusel = () => {
+  return (
+    <Composition
+      id="Carrusel"
+      component={Diapositiva}
+      width={1080}
+      height={1350} 
+      defaultProps={{ 
+        titulo: "TÍTULO DE PRUEBA", 
+        contenido: "Este es el contenido de la diapositiva aesthetic generado por la IA.", 
+        numero: 1, 
+        total: 4,
+        grafico_tipo: 'fluidez' // Por defecto
+      }}
+    />
+  );
+};
