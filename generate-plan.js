@@ -2,26 +2,31 @@ import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-const enfoque = process.env.ENFOQUE_SEMANAL || "Bienestar general y fuerza";
+const enfoque = process.env.ENFOQUE_SEMANAL || "Movimiento Integral";
 
 async function generar() {
+  // 1. Leer la Biblia de Marca
   const cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8');
 
-  const prompt = `Eres la estratega de contenido senior de Andre Molli. 
-  Basándote en nuestra Biblia de Marca:
+  const prompt = `Eres la Directora de Estrategia de Andre Molli. 
+  Basándote en nuestra identidad y pilares semanales:
   ${cerebroMarca}
 
   TAREA:
-  Crea una planificación de contenido para 7 días (Lunes a Domingo) con el enfoque: "${enfoque}".
-  Cada día debe tener un objetivo claro y usar nuestras metáforas (Cimientos, Fluidez, etc.).
+  Diseña la planificación de contenidos de Lunes a Domingo. 
+  Enfoque prioritario de esta semana: "${enfoque}".
+  
+  REGLAS:
+  - Alterna formatos (Reels, Carruseles).
+  - Usa nuestras metáforas (Cimientos, Cadena, etc.).
+  - Los títulos deben ser ganchos (hooks) potentes.
 
-  Devuelve ÚNICAMENTE un objeto JSON con esta estructura:
+  Devuelve ÚNICAMENTE un objeto JSON válido:
   {
     "enfoque": "${enfoque}",
     "dias": [
       {"dia": "Lunes", "tipo": "Reel", "titulo": "...", "descripcion": "..."},
-      {"dia": "Martes", "tipo": "Carrusel", "titulo": "...", "descripcion": "..."},
-      ... así hasta el Domingo
+      ... hasta el Domingo
     ]
   }`;
 
@@ -33,9 +38,9 @@ async function generar() {
 
     let texto = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
     fs.writeFileSync('plan-semanal.json', texto);
-    console.log("✅ Planificación semanal guardada.");
+    console.log("✅ Calendario semanal actualizado con éxito.");
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error en la planificación:", error);
   }
 }
 
