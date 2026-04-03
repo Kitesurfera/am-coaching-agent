@@ -16,15 +16,19 @@ Queremos que nuestros textos usen analogías universales sobre el movimiento, la
 - **La Cadena (El Engranaje):** El cuerpo es un sistema conectado. Un eslabón débil afecta a toda la estructura. Destaca cómo la movilidad de una articulación impacta en el rendimiento global.
 - **El Equilibrio (Tensión vs. Relajación):** Saber cuándo aplicar máxima tensión y cuándo relajar. El movimiento inteligente es eficiente, no solo cansado.
 
-## 4. Estrategia de Contenido (Para Agente 3)
-Para planificar la semana, sigue este esquema de pilares:
-- **Lunes (Arranque):** Reel motivador sobre "Cimientos" o "Mentalidad de Movimiento".
-- **Martes (Educativo):** Carrusel técnico sobre "La Cadena" (biomecánica).
-- **Miércoles (Hábito):** Reel corto con un ejercicio específico de "Fluidez".
-- **Jueves (Conexión):** Carrusel sobre "Equilibrio" (recuperación o movilidad).
-- **Viernes (Reto):** Reel dinámico para poner a prueba la fuerza.
-- **Sábado (Lifestyle):** Texto reflexivo sobre salud y vitalidad.
-- **Domingo (Revisión):** Preparación para la siguiente semana.
+## 4. Ciclo Anual de Enfoques (Automatizado)
+- **Enero:** "Cimientos y Reset" (Bases, técnica y nuevos comienzos).
+- **Febrero:** "Consistencia" (Hábitos, disciplina y regularidad).
+- **Marzo:** "La Cadena" (Fuerza estructural y conexión de tejidos).
+- **Abril:** "Fluidez" (Rango de movimiento, movilidad y respiración).
+- **Mayo:** "Energía" (Intensidad, vitalidad y potencia).
+- **Junio:** "Movimiento Libre" (Entrenamiento funcional y aire libre).
+- **Julio:** "Equilibrio" (Estabilidad, propiocepción y control).
+- **Agosto:** "Micro-movimientos" (Mantenimiento en vacaciones y salud articular).
+- **Septiembre:** "Re-enfoque" (Volver a las bases y técnica de cimientos).
+- **Octubre:** "Resistencia" (Core, fondo físico y capacidad de trabajo).
+- **Noviembre:** "Fuerza Mental" (Enfoque, superación y calma bajo tensión).
+- **Diciembre:** "Movimiento Consciente" (Reflexión, gratitud y preparación).
 
 ## 5. Formato
 - Textos limpios, párrafos cortos.
