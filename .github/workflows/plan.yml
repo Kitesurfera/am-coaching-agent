@@ -6,7 +6,10 @@ on:
       enfoque:
         description: 'Enfoque de la semana'
         required: true
-        default: 'Fuerza y Estabilidad'
+        default: 'Fuerza Estructural'
+  schedule:
+    # Se ejecuta cada Domingo a las 20:00 (Hora UTC)
+    - cron: '0 20 * * 0'
 
 permissions:
   contents: write
@@ -20,15 +23,16 @@ jobs:
         with:
           node-version: '24'
       - run: npm install
-      - name: 🧠 Generar Plan
+      - name: 🧠 Generar Plan con Cerebro de Marca
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          ENFOQUE_SEMANAL: ${{ github.event.inputs.enfoque }}
+          # Si es automático (schedule), usa un enfoque por defecto
+          ENFOQUE_SEMANAL: ${{ github.event.inputs.enfoque || 'Movimiento Integral' }}
         run: node generate-plan.js
-      - name: 💾 Guardar en Repositorio
+      - name: 💾 Guardar y Actualizar Calendario
         run: |
-          git config --global user.name "IA Planner"
+          git config --global user.name "IA Strategic Planner"
           git config --global user.email "planner@andremolli.com"
           git add plan-semanal.json
-          git commit -m "📅 Nueva planificación semanal" || echo "No hay cambios"
+          git commit -m "📅 Plan automático generado para la semana" || echo "Sin cambios"
           git push
