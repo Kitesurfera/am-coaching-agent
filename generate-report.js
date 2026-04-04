@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from 'fs';
 
-// 1. Forzamos la versión v1 de la API (evitamos la beta que da error 404)
+// Inicializamos la API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function generarInforme() {
@@ -13,6 +13,7 @@ async function generarInforme() {
 
     console.log(`🚀 Iniciando proceso para atleta: ${athleteId}`);
 
+    // 1. Petición a Render
     const res = await fetch(`${renderUrl}/api/analytics/monthly-summary/${athleteId}`, {
         headers: { 
             'Authorization': `Bearer ${trainerToken.trim()}`,
@@ -24,32 +25,38 @@ async function generarInforme() {
     const data = await res.json();
     console.log(`✅ Datos de ${data.athlete_name} recibidos.`);
 
-    // 2. Usamos el modelo más potente y estable de 2026
-    // Si eres usuario Pro, este es tu modelo:
+    // 2. CONFIGURACIÓN DEL MODELO (Basado en tu captura)
+    // Usamos el ID exacto que aparece bajo el nombre en tu imagen
     const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash", // O "gemini-2.0-flash" si ya lo activaste
-    }, { apiVersion: "v1" }); // <--- CLAVE: Forzamos V1
+        model: "gemini-3-flash-preview" 
+    });
 
     const prompt = `Eres la Cronista de Andre Molli. 
     Escribe un mensaje de WhatsApp para ${data.athlete_name}. 
-    - Entrenos: ${data.total_completed}
-    - Fatiga: ${data.avg_fatigue}/10
-    - Tests: ${JSON.stringify(data.recent_tests)}
-    - Filosofía: ${cerebroMarca}
-    REGLA: Máximo 40 palabras, tono profesional y usa una metáfora de la Biblia (Cimientos, Fluidez, Cadena o Equilibrio).`;
+    Datos del mes: ${data.total_completed} entrenos completados, fatiga media de ${data.avg_fatigue}/10. 
+    Tests recientes: ${JSON.stringify(data.recent_tests)}.
+    
+    Filosofía de marca:
+    ${cerebroMarca}
+    
+    TAREA:
+    - Máximo 40 palabras.
+    - Usa una metáfora de nuestra Biblia (Cimientos, Fluidez, Cadena o Equilibrio).
+    - Tono: Profesional, motivador y exclusivo. No uses demasiados emojis.`;
 
-    console.log("🤖 Generando contenido...");
+    console.log("🤖 Generando contenido con Gemini 3 Flash Preview...");
+    
+    // 3. Generación
     const result = await model.generateContent(prompt);
     const text = result.response.text();
+    
+    if (!text) throw new Error("La IA no generó contenido.");
 
-    if (text) {
-        fs.writeFileSync('informe-whatsapp.txt', text.trim());
-        console.log("✅ Informe guardado exitosamente.");
-    }
+    fs.writeFileSync('informe-whatsapp.txt', text.trim());
+    console.log("✅ Informe guardado con éxito.");
 
   } catch (error) {
     console.error("❌ Error Crítico:", error.message);
-    // Si el error persiste, es probable que la API Key necesite permisos de "Pay-as-you-go" en Google Cloud
     process.exit(1);
   }
 }
