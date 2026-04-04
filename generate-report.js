@@ -13,7 +13,7 @@ async function generarInforme() {
 
     console.log(`Conectando con Render en: ${renderUrl} para el atleta: ${athleteId}`);
 
-    const res = await fetch(`${renderUrl}/api/analytics/monthly-summary/${athleteId}`, {
+    const res = await fetch(`${renderUrl}/api/monthly-summary/${athleteId}`, {
         headers: { 'Authorization': `Bearer ${trainerToken}` }
     });
 
@@ -33,19 +33,24 @@ async function generarInforme() {
 
     TAREA: Escribe un mensaje corto (30-40 palabras) para enviarle por WhatsApp. 
     Usa una metáfora de nuestra Biblia (Cimientos, Fluidez, Cadena o Equilibrio) que encaje con sus datos.
-    El mensaje debe sonar exclusivo, profesional y motivador.`;
+    El mensaje debe sonar exclusivo, profesional y motivador. No uses demasiados emojis.`;
 
-    // USANDO LA SINTAXIS QUE TE FUNCIONA (Gemini 3 Flash)
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash',
-      contents: prompt,
+    // Usamos el ID de modelo estándar para la API
+    const model = ai.models.get('gemini-1.5-flash');
+    
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }]
     });
 
-    // En esta librería el texto se extrae así:
-    let text = response.text.trim();
+    // Extracción segura del texto
+    const text = result.text;
     
-    fs.writeFileSync('informe-whatsapp.txt', text);
-    console.log("✅ Informe generado y guardado en informe-whatsapp.txt");
+    if (!text) {
+        throw new Error("La IA no devolvió texto.");
+    }
+
+    fs.writeFileSync('informe-whatsapp.txt', text.trim());
+    console.log("✅ Informe generado y guardado correctamente.");
 
   } catch (error) {
     console.error("❌ Error en el Agente Cronista:", error);
