@@ -18,7 +18,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: npm install
+      - run: |
+          npm install @google/genai@latest
+          npm install
       - name: 📈 Generar Informe con IA
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
