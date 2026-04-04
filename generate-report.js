@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from 'fs';
 
+// Inicializamos la API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function generarInforme() {
@@ -12,41 +13,47 @@ async function generarInforme() {
 
     console.log(`Conectando con Render... Atleta: ${athleteId}`);
 
-    // 1. CORRECCIÓN DE RUTA: Incluimos /analytics/ que es como está en tu server.py
+    // 1. Petición a Render
     const res = await fetch(`${renderUrl}/api/analytics/monthly-summary/${athleteId}`, {
         headers: { 
-          'Authorization': `Bearer ${trainerToken.trim()}`,
-          'Content-Type': 'application/json'
+            'Authorization': `Bearer ${trainerToken.trim()}`,
+            'Content-Type': 'application/json'
         }
     });
 
     if (!res.ok) throw new Error(`Error en Render: ${res.status}`);
     const data = await res.json();
 
-    // 2. MODELO ESTABLE: gemini-1.5-flash (Garantiza que no dé 404)
+    // 2. Configuración del modelo
+    // Usamos el nombre corto que es el más compatible con la SDK actual
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `Eres la Cronista de Andre Molli. 
-    Datos de ${data.athlete_name}: ${data.total_completed} entrenos completados este mes.
-    Nivel de fatiga media: ${data.avg_fatigue}/10.
-    Tests recientes registrados: ${JSON.stringify(data.recent_tests)}.
+    Escribe un mensaje de WhatsApp para ${data.athlete_name}. 
+    Datos del mes: ${data.total_completed} entrenos completados, fatiga media de ${data.avg_fatigue}/10. 
+    Tests recientes: ${JSON.stringify(data.recent_tests)}.
     
-    Contexto de marca y Biblia: 
+    Usa la filosofía de marca:
     ${cerebroMarca}
     
-    TAREA: Escribe un mensaje de WhatsApp (máximo 40 palabras) para enviarle al cliente. 
-    Usa una metáfora de nuestra Biblia (Cimientos, Fluidez, Cadena o Equilibrio). 
-    El tono debe ser profesional, motivador y muy exclusivo.`;
+    INSTRUCCIONES:
+    - Máximo 40 palabras.
+    - Usa una metáfora de nuestra Biblia (Cimientos, Fluidez, Cadena o Equilibrio).
+    - Tono: Profesional, motivador y exclusivo.`;
 
-    // 3. GENERACIÓN
+    // 3. Generación con manejo de errores específico
     const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const response = await result.response;
+    const text = response.text();
     
+    if (!text) throw new Error("La IA no generó contenido.");
+
     fs.writeFileSync('informe-whatsapp.txt', text.trim());
-    console.log("✅ Informe generado exitosamente con Gemini.");
+    console.log("✅ Informe generado exitosamente.");
 
   } catch (error) {
-    console.error("❌ Error en el proceso:", error);
+    console.error("❌ Error en el proceso:", error.message);
+    // Si falla el 1.5, intentaremos una última vez con el nombre técnico completo
     process.exit(1);
   }
 }
