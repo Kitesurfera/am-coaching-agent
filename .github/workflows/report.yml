@@ -1,12 +1,13 @@
-name: Agente Cronista de Progreso
+name: Generar Informe Mensual
 
 on:
   workflow_dispatch:
     inputs:
       athlete_id:
-        description: 'ID del Atleta en MongoDB'
+        description: 'ID del Atleta'
         required: true
 
+# ESTO ES VITAL: Permite al agente escribir el archivo en tu repo
 permissions:
   contents: write
 
@@ -14,27 +15,31 @@ jobs:
   generar-cronica:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '24'
-      - run: |
+          node-version: '20'
+
+      - name: Instalar dependencias
+        run: |
           npm install @google/generative-ai
           npm install
-      - name: 📈 Generar Informe con IA
+
+      - name: Ejecutar Agente Cronista
+        run: node generate-report.js
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ATHLETE_ID: ${{ github.event.inputs.athlete_id }}
-          # Tu URL de Render y el Token de Andre para entrar al Back
-          RENDER_URL: "https://fit-tracker-backend-rtx2.onrender.com" 
+          RENDER_URL: ${{ secrets.RENDER_URL }}
           TRAINER_TOKEN: ${{ secrets.TRAINER_TOKEN }}
-       run: node generate-report.js
 
       - name: Publicar informe en el repo
         run: |
           git config --global user.name "Agente Cronista"
           git config --global user.email "agente@andre-molli.com"
           git add informe-whatsapp.txt
-          git commit -m "Nuevo informe generado" || echo "Sin cambios"
+          git commit -m "Nuevo informe generado para el atleta ${{ github.event.inputs.athlete_id }}" || echo "Sin cambios"
           git push
-
