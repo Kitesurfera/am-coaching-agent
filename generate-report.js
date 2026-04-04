@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from 'fs';
 
+// 1. Forzamos la versión v1 de la API (evitamos la beta que da error 404)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function generarInforme() {
@@ -12,7 +13,6 @@ async function generarInforme() {
 
     console.log(`🚀 Iniciando proceso para atleta: ${athleteId}`);
 
-    // 1. Obtener datos de Render
     const res = await fetch(`${renderUrl}/api/analytics/monthly-summary/${athleteId}`, {
         headers: { 
             'Authorization': `Bearer ${trainerToken.trim()}`,
@@ -24,44 +24,32 @@ async function generarInforme() {
     const data = await res.json();
     console.log(`✅ Datos de ${data.athlete_name} recibidos.`);
 
-    // 2. Intentar generar con varios modelos (Resiliencia)
-    // Probamos el 1.5-flash, luego el pro, luego el genérico
-    const modelosAProbar = ["gemini-1.5-flash", "gemini-1.5-flash-latest", "gemini-pro"];
-    let text = "";
+    // 2. Usamos el modelo más potente y estable de 2026
+    // Si eres usuario Pro, este es tu modelo:
+    const model = genAI.getGenerativeModel({ 
+        model: "gemini-1.5-flash", // O "gemini-2.0-flash" si ya lo activaste
+    }, { apiVersion: "v1" }); // <--- CLAVE: Forzamos V1
 
-    for (const nombreModelo of modelosAProbar) {
-        try {
-            console.log(`🤖 Intentando con modelo: ${nombreModelo}...`);
-            const model = genAI.getGenerativeModel({ model: nombreModelo });
-            
-            const prompt = `Eres la Cronista de Andre Molli. 
-            Escribe un mensaje de WhatsApp para ${data.athlete_name}. 
-            Datos: ${data.total_completed} entrenos, fatiga ${data.avg_fatigue}/10. 
-            Tests: ${JSON.stringify(data.recent_tests)}.
-            Filosofía: ${cerebroMarca}
-            REGLA: Máximo 40 palabras, tono profesional y usa una metáfora de la Biblia (Cimientos, Fluidez, Cadena o Equilibrio).`;
+    const prompt = `Eres la Cronista de Andre Molli. 
+    Escribe un mensaje de WhatsApp para ${data.athlete_name}. 
+    - Entrenos: ${data.total_completed}
+    - Fatiga: ${data.avg_fatigue}/10
+    - Tests: ${JSON.stringify(data.recent_tests)}
+    - Filosofía: ${cerebroMarca}
+    REGLA: Máximo 40 palabras, tono profesional y usa una metáfora de la Biblia (Cimientos, Fluidez, Cadena o Equilibrio).`;
 
-            const result = await model.generateContent(prompt);
-            text = result.response.text();
-            
-            if (text) {
-                console.log(`✨ Éxito con ${nombreModelo}`);
-                break; 
-            }
-        } catch (err) {
-            console.warn(`⚠️ Falló ${nombreModelo}: ${err.message}`);
-            continue; // Prueba el siguiente modelo
-        }
+    console.log("🤖 Generando contenido...");
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+
+    if (text) {
+        fs.writeFileSync('informe-whatsapp.txt', text.trim());
+        console.log("✅ Informe guardado exitosamente.");
     }
-
-    if (!text) throw new Error("Ningún modelo de Google respondió correctamente.");
-
-    // 3. Guardar resultado
-    fs.writeFileSync('informe-whatsapp.txt', text.trim());
-    console.log("✅ Informe guardado en informe-whatsapp.txt");
 
   } catch (error) {
     console.error("❌ Error Crítico:", error.message);
+    // Si el error persiste, es probable que la API Key necesite permisos de "Pay-as-you-go" en Google Cloud
     process.exit(1);
   }
 }
