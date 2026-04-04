@@ -24,6 +24,6 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ATHLETE_ID: ${{ github.event.inputs.athlete_id }}
           # Tu URL de Render y el Token de Andre para entrar al Back
-          RENDER_URL: "TU_URL_DE_RENDER_AQUI" 
+          RENDER_URL: "https://fit-tracker-backend-rtx2.onrender.com" 
           TRAINER_TOKEN: ${{ secrets.TRAINER_TOKEN }}
         run: node generate-report.js
