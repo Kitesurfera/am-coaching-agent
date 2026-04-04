@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: '24'
       - run: |
-          npm install @google/genai@latest
+          npm install @google/generative-ai
           npm install
       - name: 📈 Generar Informe con IA
         env:
