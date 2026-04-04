@@ -1,17 +1,21 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from 'fs';
 
-// Inicializamos la API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function generarInforme() {
   try {
     const athleteId = process.env.ATHLETE_ID;
-    const renderUrl = process.env.RENDER_URL;
+    
+    // Si process.env.RENDER_URL está vacío, usamos tu URL real directamente
+    const renderUrl = process.env.RENDER_URL || "https://fit-tracker-backend-rtx2.onrender.com";
+    
     const trainerToken = process.env.TRAINER_TOKEN;
     const cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8');
 
     console.log(`🚀 Iniciando proceso para atleta: ${athleteId}`);
+    console.log(`🔗 Usando URL de Render: ${renderUrl}`);
+
 
     // 1. Petición a Render
     const res = await fetch(`${renderUrl}/api/analytics/monthly-summary/${athleteId}`, {
