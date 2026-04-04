@@ -1,0 +1,29 @@
+name: Agente Cronista de Progreso
+
+on:
+  workflow_dispatch:
+    inputs:
+      athlete_id:
+        description: 'ID del Atleta en MongoDB'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  generar-cronica:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install
+      - name: 📈 Generar Informe con IA
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ATHLETE_ID: ${{ github.event.inputs.athlete_id }}
+          # Tu URL de Render y el Token de Andre para entrar al Back
+          RENDER_URL: "TU_URL_DE_RENDER_AQUI" 
+          TRAINER_TOKEN: ${{ secrets.TRAINER_TOKEN }}
+        run: node generate-report.js
