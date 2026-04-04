@@ -37,7 +37,7 @@ async function generarInforme() {
 
     const prompt = `Eres la Cronista de Andre Molli. 
     Escribe un mensaje de WhatsApp para ${data.athlete_name}. 
-    Datos del mes: ${data.total_completed} entrenos completados, fatiga media de ${data.avg_fatigue}/10. 
+    Datos del mes: ${data.total_completed} entrenos completados, fatiga media de ${data.avg_fatigue}/5. 
     Tests recientes: ${JSON.stringify(data.recent_tests)}.
     
     Filosofía de marca:
