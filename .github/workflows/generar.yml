@@ -19,19 +19,32 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+          
       - run: npm install
       - run: npx remotion browser ensure
+      
       - name: 🧠 IA Guion y Filmmaker
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           ARCHIVO_MEDIA: ${{ github.event.inputs.archivo_media }}
         run: node generate-reel.js
+
+      - name: 💾 Guardar Copy en el repositorio
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add post-generado.txt
+          git commit -m "🤖 Auto-generado: Copy para nuevo Reel" || echo "Sin cambios"
+          git push
+          
       - name: 🎬 Renderizar Video
         run: npx remotion render src/index.jsx MiVideo ReelAndre.mp4 --props=props.json
+        
       - uses: actions/upload-artifact@v4
         with:
           name: Reel-Andre-Molli
