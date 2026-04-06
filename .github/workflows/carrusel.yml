@@ -28,6 +28,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TEMA_CARRUSEL: ${{ github.event.inputs.tema }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: node generate-carrusel.js
       - name: 🎨 Renderizar Imágenes
         run: |
