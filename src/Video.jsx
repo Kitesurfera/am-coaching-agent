@@ -1,107 +1,78 @@
-import React from "react";
-// Mantenemos OffthreadVideo para evitar bloqueos en GitHub Actions
-import { Composition, AbsoluteFill, interpolate, useCurrentFrame, staticFile, OffthreadVideo, Img, getInputProps } from "remotion";
+import React from 'react';
+import { Composition, AbsoluteFill, OffthreadVideo, staticFile } from 'remotion';
 
-const colores = {
-  blanco: "#FFFFFF",
-};
-
-const AnimacionAndre = () => {
-  const frame = useCurrentFrame();
-  const { archivo } = getInputProps(); 
-
-  // Nombre exacto de tu logo cargado en la carpeta public/
-  const archivoLogo = "logo.png"; 
-
-  const esVideo = archivo.toLowerCase().endsWith('.mp4') || archivo.toLowerCase().endsWith('.mov');
-
-  // Animaciones suaves idénticas para ambos elementos (aparecen juntas)
-  const opacityBranding = interpolate(frame, [0, 30], [0, 1], { extrapolateRight: "clamp" });
-  const moveYBranding = interpolate(frame, [0, 30], [50, 0], { extrapolateRight: "clamp" });
+// 1. EL DISEÑO VISUAL DEL REEL
+const DiseñoReel = ({ 
+  hook_visual, 
+  voiceover, 
+  grafico_tipo, 
+  video_fondo_url, 
+  archivo_local 
+}) => {
+  // El Agente decide: ¿Usamos el vídeo del Hub o el stock de Pexels?
+  const videoSrc = archivo_local ? staticFile(archivo_local) : video_fondo_url;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: "#111" }}>
-      {/* 1. EL FONDO: Tu archivo crudo de entreno */}
-      <AbsoluteFill>
-        {esVideo ? (
-          <OffthreadVideo src={staticFile(archivo)} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
-        ) : (
-          <Img src={staticFile(archivo)} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
-        )}
-      </AbsoluteFill>
+    <AbsoluteFill style={{ backgroundColor: '#111' }}>
+      
+      {/* CAPA 1: EL VÍDEO DE FONDO */}
+      {videoSrc ? (
+        <OffthreadVideo 
+          src={videoSrc} 
+          style={{ objectFit: 'cover', width: '100%', height: '100%' }} 
+        />
+      ) : null}
 
-      {/* 2. EL FILTRO OSCURO: Para asegurar legibilidad (40%) */}
-      <AbsoluteFill style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }} />
+      {/* CAPA 2: FILTRO CINEMATOGRÁFICO (Oscurece el fondo para que el texto brille) */}
+      <AbsoluteFill style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} />
 
-      {/* 3. LOGO: Arriba a la derecha, más grande */}
-      <AbsoluteFill style={{
-        justifyContent: "flex-start", // Top
-        alignItems: "flex-end",    // Right
-        paddingTop: "60px",
-        paddingRight: "60px",
-        zIndex: 20
+      {/* CAPA 3: ELEMENTOS AESTHETIC DE LA MARCA */}
+      {/* Dependiendo de lo que decida la IA (cimientos, estructura...), aplicamos un estilo */}
+      <AbsoluteFill style={{ 
+        border: grafico_tipo === 'estructura_grid' ? '15px solid #2299AF' : 'none',
+        opacity: 0.8,
+        boxSizing: 'border-box'
+      }} />
+
+      {/* CAPA 4: EL GANCHO TEXTUAL (Hook) */}
+      <AbsoluteFill style={{ 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        padding: '80px'
       }}>
-        <div style={{
-          transform: `translateY(${moveYBranding}px)`,
-          opacity: opacityBranding,
+        <h1 style={{ 
+          color: 'white', 
+          fontSize: '90px', 
+          fontWeight: '900',
+          textTransform: 'uppercase',
+          textAlign: 'center',
+          lineHeight: '1.1',
+          textShadow: '0px 10px 40px rgba(0,0,0,0.9)'
         }}>
-          <Img 
-            src={staticFile(archivoLogo)} 
-            style={{
-              // Aumentamos el tamaño. Antes era 60% centrado (pequeño).
-              // Ahora le damos un tamaño fijo controlado para que destaque arriba.
-              height: "140px", // Aumenta o disminuye esto para el tamaño del logo
-              width: "auto",
-              objectFit: "contain"
-            }}
-          />
-        </div>
-      </AbsoluteFill>
-
-      {/* 4. ESLOGAN: Abajo centrado, con espacio de seguridad para el copy de IG */}
-      <AbsoluteFill style={{
-        justifyContent: "flex-end", // Bottom
-        alignItems: "center",     // Center
-        // Margen de seguridad para la UI de Instagram (captions, iconos, etc.)
-        // Usamos mucho espacio abajo (220px) para el "dead zone" de Reels
-        paddingBottom: "220px", 
-        paddingLeft: "10%",
-        paddingRight: "10%",
-        zIndex: 10
-      }}>
-        <h2 style={{
-          color: colores.blanco,
-          opacity: opacityBranding,
-          // Movemos este elemento de abajo hacia arriba ligeramente para la animación
-          transform: `translateY(${-moveYBranding}px)`, 
-          fontSize: "45px", // Un poco más grande para que se lea mejor abajo
-          fontFamily: "sans-serif",
-          textTransform: "uppercase",
-          letterSpacing: "0.15em",
-          textAlign: "center",
-          fontWeight: "bold", // Hacemos bold el eslogan para que tenga jerarquía
-          textShadow: "2px 2px 8px rgba(0,0,0,0.5)", // Sombra más fuerte
-          margin: 0
-        }}>
-          COACHING | FITNESS | MOVIMIENTO
-        </h2>
+          {hook_visual}
+        </h1>
       </AbsoluteFill>
 
     </AbsoluteFill>
   );
 };
 
+// 2. EXPORTAMOS LA COMPOSICIÓN (Lo que lee el index.jsx)
 export const RemotionVideo = () => {
   return (
     <Composition
-      id="MiVideo"
-      component={AnimacionAndre}
-      durationInFrames={150} // 5 segundos
+      id="MiVideo" // ⚠️ MUY IMPORTANTE: Este es el nombre que busca el workflow generar.yml
+      component={DiseñoReel}
+      durationInFrames={150} // 5 segundos a 30fps
       fps={30}
       width={1080}
-      height={1920} // Formato Reel vertical
+      height={1920}
       defaultProps={{
-        archivo: "leeme.txt" // Archivo por defecto para evitar errores si no se pasa uno
+        // Valores por defecto por si la IA falla
+        hook_visual: "DOMINA TU INERCIA",
+        grafico_tipo: "estructura_grid",
+        video_fondo_url: "",
+        archivo_local: null
       }}
     />
   );
