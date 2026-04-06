@@ -24,11 +24,12 @@ jobs:
           node-version: '24'
       - run: npm install
       - run: npx remotion browser ensure
-      - name: 🧠 IA Copy
+      - name: 🧠 IA Guion y Filmmaker
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-        run: node generate-copy.js
+          ARCHIVO_MEDIA: ${{ github.event.inputs.archivo_media }}
+        run: node generate-reel.js
       - name: 🎬 Renderizar Video
         env:
           ARCHIVO_MEDIA: ${{ github.event.inputs.archivo_media }}
