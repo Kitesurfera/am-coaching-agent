@@ -46,6 +46,8 @@ async function generarReel() {
         }
     }
 
+reelData.archivo_local = archivo !== "entreno1.mp4" ? archivo : null;
+
     fs.writeFileSync('props.json', JSON.stringify(reelData, null, 2));
     fs.writeFileSync('post-generado.txt', reelData.copy_post);
     console.log("✅ Configuración de Reel generada.");
