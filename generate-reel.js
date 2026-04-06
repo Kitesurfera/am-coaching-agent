@@ -2,7 +2,8 @@ import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-const archivo = process.env.ARCHIVO_MEDIA || "entreno.mp4"; // Si subes uno, usa ese, si no, busca stock
+// CORRECCIÓN AQUÍ: entreno1.mp4 para que coincida exactamente con tu generar.yml
+const archivo = process.env.ARCHIVO_MEDIA || "entreno1.mp4"; 
 const pexelsKey = process.env.PEXELS_API_KEY;
 
 async function generarReel() {
@@ -46,7 +47,8 @@ async function generarReel() {
         }
     }
 
-reelData.archivo_local = archivo !== "entreno1.mp4" ? archivo : null;
+    // Le decimos a Remotion si debe usar el vídeo local o el de Pexels
+    reelData.archivo_local = archivo !== "entreno1.mp4" ? archivo : null;
 
     fs.writeFileSync('props.json', JSON.stringify(reelData, null, 2));
     fs.writeFileSync('post-generado.txt', reelData.copy_post);
