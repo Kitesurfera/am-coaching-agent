@@ -31,10 +31,7 @@ jobs:
           ARCHIVO_MEDIA: ${{ github.event.inputs.archivo_media }}
         run: node generate-reel.js
       - name: 🎬 Renderizar Video
-        env:
-          ARCHIVO_MEDIA: ${{ github.event.inputs.archivo_media }}
-        run: >
-          npx remotion render src/index.jsx MiVideo ReelAndre.mp4 --props="{\"archivo\":\"$ARCHIVO_MEDIA\"}"
+        run: npx remotion render src/index.jsx MiVideo ReelAndre.mp4 --props=props.json
       - uses: actions/upload-artifact@v4
         with:
           name: Reel-Andre-Molli
