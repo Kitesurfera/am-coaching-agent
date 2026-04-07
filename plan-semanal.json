@@ -1,47 +1,47 @@
 {
-  "enfoque": "Fluidez (Rango de movimiento, movilidad y respiración)",
+  "enfoque_semanal": "Fuerza",
   "dias": [
     {
       "dia": "Lunes",
-      "tipo": "Reel",
-      "titulo": "El Despertar de la Fluidez: Tu Cadena se Mueve",
-      "descripcion": "La rigidez es una barrera; la fluidez, una invitación. Hoy, te invito a conectar con el enfoque de abril: la 'fluidez'. Piensa en tu cuerpo como una 'cadena' de eslabones perfectamente sincronizados. Un movimiento fluido es señal de que cada conexión está en su sitio, permitiendo que la energía se transfiera sin interrupciones. Siente cómo tu cuerpo puede deslizarse, no solo empujar. Es hora de liberar el movimiento."
+      "titulo": "Fuerza desde los Cimientos",
+      "tipo": "cimientos",
+      "tip": "Cada repetición es una oportunidad para enraizarte. Siente cómo la fuerza nace desde el suelo, construyendo tus Cimientos sobre una base sólida y consciente."
     },
     {
       "dia": "Martes",
-      "tipo": "Carousel",
-      "titulo": "Respiración Consciente: El Pulso de tu Fluidez Interna 🌬️",
-      "descripcion": "La respiración no es solo para vivir, es para moverte mejor. Es la maestra del 'equilibrio' entre tensión y relajación, un pilar fundamental para la 'fluidez'. Al sincronizar tu respiración con cada movimiento, creas espacio, reduces la fricción interna y permites que tu cuerpo encuentre su ritmo natural. Desbloquea tu rango de movimiento desde dentro hacia fuera. ¿Cómo respiras mientras te mueves?"
+      "titulo": "La Cadena de Poder Posterior",
+      "tipo": "cadena",
+      "tip": "Tu cuerpo es una Cadena de eslabones interconectados. Enfócate en la activación conjunta de tu cadena posterior, desde los isquios hasta los dorsales, para un movimiento fluido y potente."
     },
     {
       "dia": "Miércoles",
-      "tipo": "Post",
-      "titulo": "Más Allá de la Amplitud: Construyendo Cimientos de Movilidad",
-      "descripcion": "Una casa necesita 'cimientos' sólidos para crecer. Tu cuerpo necesita una base de movilidad robusta para moverse con 'fluidez' y sin limitaciones. No se trata solo de estirar, sino de poseer cada grado de movimiento, con control y propósito. Prepara tus articulaciones para la vida, permitiendo que tu cuerpo explore nuevas dimensiones sin miedo. La movilidad es la antesala de la fuerza real."
+      "titulo": "Equilibrio entre Tensión y Empuje",
+      "tipo": "equilibrio",
+      "tip": "Domina el Equilibrio entre aplicar la tensión máxima y relajar lo necesario. El control en el empuje no es solo fuerza, es una danza consciente de tu cuerpo en el espacio."
     },
     {
       "dia": "Jueves",
-      "tipo": "Reel",
-      "titulo": "La Danza de las Transiciones: De Estático a Dinámico 🌊",
-      "descripcion": "Tu vida es una serie de transiciones, y tu cuerpo también. La verdadera 'fluidez' se manifiesta en cómo pasas de una postura a otra, de un movimiento a otro. Piensa en tus articulaciones como los pivotes de una 'cadena' cinemática, donde la suavidad en las transiciones evita los puntos de fricción. Libérate de los movimientos robóticos y abraza la continuidad. Siente el 'Movimiento con Propósito' en cada cambio."
+      "titulo": "Descanso Activo: Fluidez Restauradora",
+      "tipo": "fluidez",
+      "tip": "Hoy, deja que tu cuerpo recupere su Fluidez natural. Un movimiento suave y controlado permite que la energía circule, preparando tus articulaciones para la próxima descarga de fuerza."
     },
     {
       "dia": "Viernes",
-      "tipo": "Carousel",
-      "titulo": "El Arte de Soltar: Encuentra tu Equilibrio para Fluir Mejor 🧘‍♀️",
-      "descripcion": "¿Cuándo tensar y cuándo relajar? Ahí reside el verdadero 'equilibrio' para la 'fluidez'. El movimiento inteligente no es solo fuerza bruta, sino eficiencia. Aprender a soltar la tensión innecesaria permite que tu 'cadena' muscular trabaje de forma más armónica, conservando energía y previniendo el desgaste. Descubre cómo una mente relajada se traduce en un cuerpo más fluido y potente."
+      "titulo": "Fuerza Explosiva con Fluidez",
+      "tipo": "fluidez",
+      "tip": "Genera potencia con una Fluidez impecable. Gestiona la inercia en cada despegue y perfecciona tus aterrizajes para proteger tus articulaciones y maximizar cada movimiento."
     },
     {
       "dia": "Sábado",
-      "tipo": "Post",
-      "titulo": "Movimiento Tridimensional: Desbloquea tu Cuerpo en el Espacio 🌐",
-      "descripcion": "La 'fluidez' no conoce límites; se manifiesta en todos los planos. ¿Cómo se comporta tu 'cadena' cuando te mueves lateralmente, o rotas? Desafía tus 'cimientos' con movimientos que exploran la multidimensionalidad del espacio. Esto no solo fortalece, sino que enseña a tu cuerpo a reaccionar y adaptarse, preparándote para cualquier desafío inesperado de la vida, con 'Movimiento con Propósito'."
+      "titulo": "Conexión Total de la Cadena Muscular",
+      "tipo": "cadena",
+      "tip": "Desafía tu Cadena completa con movimientos compuestos. Siente cómo cada músculo es un eslabón vital, trabajando en perfecta armonía para mover el peso con propósito."
     },
     {
       "dia": "Domingo",
-      "tipo": "Reel",
-      "titulo": "La Fluidez es tu Poder Silencioso: Integración Semanal ✨",
-      "descripcion": "Cerramos esta semana enfocados en la 'fluidez' recordándote que no es solo una cualidad física, sino una forma de vida. Cada respiración consciente, cada movimiento liberado, cada 'equilibrio' entre tensión y relajación, fortalece tu 'cadena' y tus 'cimientos'. Integra esta sensación de 'Movimiento con Propósito' en tu día a día. ¿Sientes la diferencia? Prepárate para seguir construyendo la próxima semana."
+      "titulo": "Re-equilibrio y Preparación",
+      "tipo": "equilibrio",
+      "tip": "Encuentra el Equilibrio perfecto entre mente y cuerpo. El descanso es tan crucial como el entrenamiento; permite que tu fuerza se asiente y tu energía se recargue para la semana que viene."
     }
   ]
 }
