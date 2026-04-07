@@ -66,7 +66,8 @@ const RenderAesthetic = ({ tipo }) => {
       );
   }
 };
-// 1. EL DISEÑO VISUAL DEL REEL
+
+// 2. EL DISEÑO VISUAL DEL REEL
 const DiseñoReel = ({ 
   hook_visual, 
   voiceover, 
@@ -91,19 +92,15 @@ const DiseñoReel = ({
       {/* CAPA 2: FILTRO CINEMATOGRÁFICO (Oscurece el fondo para que el texto brille) */}
       <AbsoluteFill style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} />
 
-      {/* CAPA 3: ELEMENTOS AESTHETIC DE LA MARCA */}
-      {/* Dependiendo de lo que decida la IA (cimientos, estructura...), aplicamos un estilo */}
-      <AbsoluteFill style={{ 
-        border: grafico_tipo === 'estructura_grid' ? '15px solid #2299AF' : 'none',
-        opacity: 0.8,
-        boxSizing: 'border-box'
-      }} />
+      {/* CAPA 3: ELEMENTOS AESTHETIC DE LA MARCA (CORREGIDO) */}
+      <RenderAesthetic tipo={grafico_tipo} />
 
       {/* CAPA 4: EL GANCHO TEXTUAL (Hook) */}
       <AbsoluteFill style={{ 
         justifyContent: 'center', 
         alignItems: 'center',
-        padding: '80px'
+        padding: '80px',
+        zIndex: 10 // Asegura que el texto quede por encima de las mallas
       }}>
         <h1 style={{ 
           color: 'white', 
@@ -122,11 +119,11 @@ const DiseñoReel = ({
   );
 };
 
-// 2. EXPORTAMOS LA COMPOSICIÓN (Lo que lee el index.jsx)
+// 3. EXPORTAMOS LA COMPOSICIÓN (Lo que lee el index.jsx)
 export const RemotionVideo = () => {
   return (
     <Composition
-      id="MiVideo" // ⚠️ MUY IMPORTANTE: Este es el nombre que busca el workflow generar.yml
+      id="MiVideo" 
       component={DiseñoReel}
       durationInFrames={150} // 5 segundos a 30fps
       fps={30}
