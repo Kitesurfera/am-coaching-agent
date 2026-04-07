@@ -1,51 +1,68 @@
 import React from 'react';
 import { Composition, AbsoluteFill, Img } from 'remotion';
 
-// 1. EL MOTOR DE GRÁFICOS AESTHETIC
+// 1. EL MOTOR DE GRÁFICOS AESTHETIC PREMIUM
 const RenderAesthetic = ({ tipo }) => {
   switch (tipo) {
     case 'estructura_grid':
-      // Dibuja una cuadrícula técnica tipo "blueprint" o plano de ingeniería
+      // Estilo: Análisis de movimiento. Cruces de enfoque y malla muy sutil para medir el rango.
       return (
-        <AbsoluteFill style={{
-          backgroundImage: `linear-gradient(rgba(34, 153, 175, 0.2) 2px, transparent 2px), linear-gradient(90deg, rgba(34, 153, 175, 0.2) 2px, transparent 2px)`,
-          backgroundSize: '100px 100px',
-          opacity: 0.8
-        }} />
+        <AbsoluteFill>
+          <AbsoluteFill style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)`,
+            backgroundSize: '40px 40px',
+          }} />
+          {/* Tracking corners */}
+          <div style={{ position: 'absolute', top: 50, left: 50, width: 40, height: 40, borderTop: '2px solid #2299AF', borderLeft: '2px solid #2299AF' }} />
+          <div style={{ position: 'absolute', top: 50, right: 50, width: 40, height: 40, borderTop: '2px solid #2299AF', borderRight: '2px solid #2299AF' }} />
+          <div style={{ position: 'absolute', bottom: 50, left: 50, width: 40, height: 40, borderBottom: '2px solid #2299AF', borderLeft: '2px solid #2299AF' }} />
+          <div style={{ position: 'absolute', bottom: 50, right: 50, width: 40, height: 40, borderBottom: '2px solid #2299AF', borderRight: '2px solid #2299AF' }} />
+        </AbsoluteFill>
       );
     
     case 'fluidez':
-      // Dibuja una onda de energía dinámica en la parte inferior
+      // Estilo: Tensión y estela. Líneas vectoriales elegantes simulando inercias.
       return (
-        <AbsoluteFill style={{ justifyContent: 'flex-end' }}>
-          <svg viewBox="0 0 1440 320" style={{ width: '100%', opacity: 0.6 }}>
-            <path fill="#14b8a6" fillOpacity="1" d="M0,160L60,176C120,192,240,224,360,213.3C480,203,600,149,720,144C840,139,960,181,1080,197.3C1200,213,1320,203,1380,176L1440,149L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+        <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ width: '100%', height: '100%', opacity: 0.2, position: 'absolute' }}>
+            <path d="M-10,50 Q25,20 50,50 T110,50" fill="none" stroke="#14b8a6" strokeWidth="0.3" />
+            <path d="M-10,60 Q30,30 60,60 T110,60" fill="none" stroke="#14b8a6" strokeWidth="0.1" />
           </svg>
+          <div style={{ position: 'absolute', width: '150%', height: '40%', background: 'radial-gradient(ellipse at center, rgba(20,184,166,0.1) 0%, transparent 60%)', transform: 'rotate(-10deg)' }} />
         </AbsoluteFill>
       );
 
     case 'cimientos':
-      // Dibuja un degradado sólido y pesado desde abajo (como raíces/tierra)
+      // Estilo: Impacto y base. Un degradado negro ahumado con una línea de anclaje sólida.
       return (
-        <AbsoluteFill style={{
-          background: 'linear-gradient(to top, rgba(64, 64, 0, 0.9) 0%, rgba(64, 64, 0, 0) 50%)'
-        }} />
+        <AbsoluteFill style={{ justifyContent: 'flex-end' }}>
+          <div style={{
+            height: '45%',
+            background: 'linear-gradient(to top, rgba(17,17,17,0.95) 0%, rgba(17,17,17,0.6) 50%, transparent 100%)',
+          }} />
+          <div style={{ position: 'absolute', bottom: 120, left: '10%', width: '80%', height: '1px', background: 'rgba(255,255,255,0.2)' }} />
+          <div style={{ position: 'absolute', bottom: 120, left: '45%', width: '10%', height: '3px', background: '#404000' }} />
+        </AbsoluteFill>
       );
 
     case 'cadena':
-      // Dibuja líneas de conexión discontinuas (eslabones) en los laterales
+      // Estilo: HUD Cinematográfico. Ejes de conexión técnicos y datos en pantalla.
       return (
-        <AbsoluteFill style={{
-          borderLeft: '10px dashed rgba(255,255,255,0.4)',
-          borderRight: '10px dashed rgba(255,255,255,0.4)',
-          margin: '40px'
-        }} />
+        <AbsoluteFill>
+          <div style={{ position: 'absolute', top: 60, left: 60, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', fontSize: '18px', letterSpacing: '4px' }}>
+            SYNC // LINK_ACTIVE
+          </div>
+          <div style={{ position: 'absolute', bottom: 60, right: 60, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', fontSize: '18px', letterSpacing: '4px' }}>
+            KINEMATIC_REC ●
+          </div>
+          <div style={{ position: 'absolute', left: '50%', top: '15%', height: '70%', width: '1px', background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.15), transparent)' }} />
+        </AbsoluteFill>
       );
 
     default:
-      // Un marco minimalista por defecto
+      // Minimalismo absoluto
       return (
-        <AbsoluteFill style={{ border: '8px solid rgba(255,255,255,0.2)', margin: '40px' }} />
+        <AbsoluteFill style={{ border: '1px solid rgba(255,255,255,0.1)', margin: '30px' }} />
       );
   }
 };
