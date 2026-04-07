@@ -3,8 +3,6 @@ import { Composition, AbsoluteFill } from 'remotion';
 
 // Importamos el motor gráfico HUD que usamos en Video y Carrusel
 const RenderAesthetic = ({ tipo }) => {
-  // (Mismo código de RenderAesthetic que usaste en Video.jsx y Carrusel.jsx)
-  // ... Pega aquí el switch(tipo) con los HUDs, cuadrículas, etc. ...
     switch (tipo) {
     case 'estructura_grid':
       return (
@@ -75,7 +73,7 @@ const DiseñoPlan = ({ enfoque_semanal, dias }) => {
             display: 'flex', 
             alignItems: 'center', 
             background: 'linear-gradient(90deg, rgba(255,255,255,0.05) 0%, transparent 100%)',
-            borderLeft: `4px solid ${diaInfo.tipo === 'cimientos' ? '#404000' : diaInfo.tipo === 'fluidez' ? '#14b8a6' : '#2299AF'}`,
+            borderLeft: `4px solid ${diaInfo.grafico_tipo === 'cimientos' ? '#404000' : diaInfo.grafico_tipo === 'fluidez' ? '#14b8a6' : '#2299AF'}`,
             padding: '25px 40px',
             borderRadius: '0 20px 20px 0'
           }}>
@@ -86,7 +84,13 @@ const DiseñoPlan = ({ enfoque_semanal, dias }) => {
             </div>
             <div style={{ flex: 1 }}>
               <h3 style={{ color: 'white', fontSize: '38px', fontWeight: 'bold', margin: '0 0 10px 0' }}>{diaInfo.titulo}</h3>
-              <p style={{ color: '#9CA3AF', fontSize: '22px', margin: 0, fontStyle: 'italic' }}>{diaInfo.tip}</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  {/* Aquí mostramos si es Reel o Carrusel en el póster */}
+                  <span style={{ backgroundColor: '#2299AF', color: '#111', fontSize: '18px', fontWeight: '900', padding: '5px 15px', borderRadius: '50px', textTransform: 'uppercase' }}>
+                    {diaInfo.tipo}
+                  </span>
+                  <p style={{ color: '#9CA3AF', fontSize: '22px', margin: 0, fontStyle: 'italic' }}>{diaInfo.tip}</p>
+              </div>
             </div>
           </div>
         ))}
@@ -99,12 +103,12 @@ const DiseñoPlan = ({ enfoque_semanal, dias }) => {
 export const RemotionPlan = () => {
   return (
     <Composition
-      id="PlanSemanal" // ⚠️ El nombre que busca plan.yml
+      id="PlanSemanal"
       component={DiseñoPlan}
       durationInFrames={1}
       fps={30}
       width={1080}
-      height={1920} // Formato Stories de Instagram
+      height={1920} 
       defaultProps={{
         enfoque_semanal: "CARGANDO DATOS...",
         dias: []
