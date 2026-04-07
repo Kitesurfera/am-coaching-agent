@@ -11,6 +11,15 @@ const micro = process.env.MICRO_CICLO;
 async function generarRutina() {
   const cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8');
 
+  // 🔥 Lógica dinámica: ¿Tiene el atleta un ciclo activo?
+  let contextoCiclo = "";
+  if (macro === "no_asignado" || micro === "no_asignado") {
+    contextoCiclo = `- Fase actual: No asignada (Fuera de ciclo o Transición).
+  - Objetivo: Crea una rutina de Mantenimiento General o Evaluación de estado físico. Prioriza la técnica pura, la movilidad articular y la prevención de lesiones sin sobrecargar el sistema nervioso.`;
+  } else {
+    contextoCiclo = `- Macrociclo: ${macro}\n  - Microciclo: ${micro}`;
+  }
+
   const prompt = `Eres el Head Coach y Director de Rendimiento de Andre Molli.
   Aquí está nuestra Biblia de Marca (inercia, aterrizajes, control):
   ${cerebroMarca}
@@ -18,12 +27,11 @@ async function generarRutina() {
   TAREA:
   Genera una sesión de entrenamiento (rutina) de Alto Rendimiento para nuestro atleta.
   Contexto del entrenamiento:
-  - Macrociclo: ${macro}
-  - Microciclo: ${micro}
+  ${contextoCiclo}
 
   REGLAS:
   1. Aplica nuestros conceptos estéticos y metáforas en la descripción y las notas de los ejercicios.
-  2. Debe ser un reto realista pero muy técnico.
+  2. Debe ser un reto realista pero muy técnico, adecuado a la fase especificada arriba.
   3. Formato estricto para base de datos.
 
   Devuelve ÚNICAMENTE un objeto JSON válido con esta estructura:
@@ -51,8 +59,6 @@ async function generarRutina() {
 
     console.log("🎬 Rutina generada por la IA. Inyectando en la Base de Datos...");
 
-    // ⚠️ ATENCIÓN: Asumo que tu endpoint para crear rutinas es /api/workouts. 
-    // Si en tu backend de Render se llama diferente, cámbialo aquí abajo.
     const apiRes = await fetch(`${renderUrl}/api/workouts`, {
         method: 'POST',
         headers: {
@@ -70,7 +76,7 @@ async function generarRutina() {
     console.log("✅ Rutina inyectada y asignada al atleta con éxito.");
   } catch (error) {
     console.error("❌ Error Crítico:", error);
-    process.exit(1); // Detiene la acción de GitHub si hay fallo
+    process.exit(1); 
   }
 }
 
