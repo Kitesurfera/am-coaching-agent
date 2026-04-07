@@ -6,12 +6,22 @@ on:
       athlete_id:
         description: 'ID del Atleta'
         required: true
-      macro_ciclo:
-        description: 'Fase del Macrociclo'
+      macro_nombre:
+        description: 'Nombre del Macrociclo'
+        required: false
+      micro_nombre:
+        description: 'Nombre del Microciclo'
+        required: false
+      micro_id:
+        description: 'ID del Microciclo (DB)'
+        required: false
+      dias:
+        description: 'Número de días a planificar'
         required: true
-      micro_ciclo:
-        description: 'Tipo de Microciclo'
-        required: true
+        default: '1'
+      foco:
+        description: 'Foco técnico específico'
+        required: false
 
 permissions:
   contents: read
@@ -33,8 +43,11 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           RENDER_URL: "https://fit-tracker-backend-rtx2.onrender.com"
-          TRAINER_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzEwMjFiYzctMjA5ZS00OWFiLWE4MWItNWIzNTA4ZjU5NDI0Iiwicm9sZSI6InRyYWluZXIiLCJleHAiOjQ5Mjg5MjI1NTF9.pLGlXX5i4aTwuPhM8Xklepc6-3Jc8wrjweoMjeKanb4"
+          TRAINER_TOKEN: ${{ secrets.TRAINER_TOKEN }}
           ATHLETE_ID: ${{ github.event.inputs.athlete_id }}
-          MACRO_CICLO: ${{ github.event.inputs.macro_ciclo }}
-          MICRO_CICLO: ${{ github.event.inputs.micro_ciclo }}
+          MACRO_NOMBRE: ${{ github.event.inputs.macro_nombre }}
+          MICRO_NOMBRE: ${{ github.event.inputs.micro_nombre }}
+          MICRO_ID: ${{ github.event.inputs.micro_id }}
+          DIAS: ${{ github.event.inputs.dias }}
+          FOCO: ${{ github.event.inputs.foco }}
         run: node generate-routine.js
