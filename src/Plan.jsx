@@ -1,7 +1,7 @@
 import React from 'react';
 import { Composition, AbsoluteFill } from 'remotion';
 
-// Importamos el motor gráfico HUD que usamos en Video y Carrusel
+// Importamos el motor gráfico HUD
 const RenderAesthetic = ({ tipo }) => {
     switch (tipo) {
     case 'estructura_grid':
@@ -50,46 +50,45 @@ const RenderAesthetic = ({ tipo }) => {
 
 const DiseñoPlan = ({ enfoque_semanal, dias }) => {
   return (
-    <AbsoluteFill style={{ backgroundColor: '#0a0a0a', padding: '100px', display: 'flex', flexDirection: 'column' }}>
+    <AbsoluteFill style={{ backgroundColor: '#0a0a0a', padding: '60px 80px', display: 'flex', flexDirection: 'column' }}>
       
       {/* Fondo técnico unificado */}
       <RenderAesthetic tipo="cadena" />
       <RenderAesthetic tipo="estructura_grid" />
 
-      {/* Cabecera */}
-      <div style={{ zIndex: 10, borderBottom: '2px solid rgba(255,255,255,0.1)', paddingBottom: '40px', marginBottom: '60px' }}>
-        <h2 style={{ color: '#2299AF', fontSize: '30px', fontWeight: '900', letterSpacing: '10px', textTransform: 'uppercase', marginBottom: '10px' }}>
+      {/* Cabecera ajustada */}
+      <div style={{ zIndex: 10, borderBottom: '2px solid rgba(255,255,255,0.1)', paddingBottom: '30px', marginBottom: '30px' }}>
+        <h2 style={{ color: '#2299AF', fontSize: '26px', fontWeight: '900', letterSpacing: '8px', textTransform: 'uppercase', marginBottom: '10px' }}>
           PROTOCOLO ACTIVO
         </h2>
-        <h1 style={{ color: 'white', fontSize: '70px', fontWeight: '900', textTransform: 'uppercase', lineHeight: '1.1' }}>
+        <h1 style={{ color: 'white', fontSize: '65px', fontWeight: '900', textTransform: 'uppercase', lineHeight: '1.1' }}>
           {enfoque_semanal}
         </h1>
       </div>
 
-      {/* Lista de días */}
-      <div style={{ zIndex: 10, display: 'flex', flexDirection: 'column', gap: '35px', flexGrow: 1 }}>
+      {/* Lista de días con márgenes ajustados para que no se corte */}
+      <div style={{ zIndex: 10, display: 'flex', flexDirection: 'column', gap: '20px', flexGrow: 1, justifyContent: 'center' }}>
         {dias && dias.map((diaInfo, index) => (
           <div key={index} style={{ 
             display: 'flex', 
             alignItems: 'center', 
             background: 'linear-gradient(90deg, rgba(255,255,255,0.05) 0%, transparent 100%)',
             borderLeft: `4px solid ${diaInfo.grafico_tipo === 'cimientos' ? '#404000' : diaInfo.grafico_tipo === 'fluidez' ? '#14b8a6' : '#2299AF'}`,
-            padding: '25px 40px',
+            padding: '20px 30px',
             borderRadius: '0 20px 20px 0'
           }}>
-            <div style={{ width: '200px' }}>
-              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '25px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '3px' }}>
+            <div style={{ width: '180px' }}>
+              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '22px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '2px' }}>
                 {diaInfo.dia}
               </span>
             </div>
             <div style={{ flex: 1 }}>
-              <h3 style={{ color: 'white', fontSize: '38px', fontWeight: 'bold', margin: '0 0 10px 0' }}>{diaInfo.titulo}</h3>
+              <h3 style={{ color: 'white', fontSize: '32px', fontWeight: 'bold', margin: '0 0 8px 0' }}>{diaInfo.titulo}</h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  {/* Aquí mostramos si es Reel o Carrusel en el póster */}
-                  <span style={{ backgroundColor: '#2299AF', color: '#111', fontSize: '18px', fontWeight: '900', padding: '5px 15px', borderRadius: '50px', textTransform: 'uppercase' }}>
+                  <span style={{ backgroundColor: '#2299AF', color: '#111', fontSize: '15px', fontWeight: '900', padding: '4px 12px', borderRadius: '50px', textTransform: 'uppercase' }}>
                     {diaInfo.tipo}
                   </span>
-                  <p style={{ color: '#9CA3AF', fontSize: '22px', margin: 0, fontStyle: 'italic' }}>{diaInfo.tip}</p>
+                  <p style={{ color: '#9CA3AF', fontSize: '20px', margin: 0, fontStyle: 'italic' }}>{diaInfo.tip}</p>
               </div>
             </div>
           </div>
