@@ -1,4 +1,4 @@
-name: Agente Planificador Semanal
+name: Generar Plan Semanal IA
 
 on:
   workflow_dispatch:
@@ -6,33 +6,45 @@ on:
       enfoque:
         description: 'Enfoque de la semana'
         required: true
-        default: 'Fuerza Estructural'
-  schedule:
-    # Se ejecuta cada Domingo a las 20:00 (Hora UTC)
-    - cron: '0 20 * * 0'
+        default: 'Estabilidad de Aterrizaje'
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
-  planificar:
+  crear-plan:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+          
       - run: npm install
-      - name: 🧠 Generar Plan con Cerebro de Marca
+      - run: npx remotion browser ensure
+      
+      - name: 🧠 IA Estratega
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          # Si es automático (schedule), usa un enfoque por defecto
-          ENFOQUE_SEMANAL: ${{ github.event.inputs.enfoque || 'Movimiento Integral' }}
+          ENFOQUE_PLAN: ${{ github.event.inputs.enfoque }}
         run: node generate-plan.js
-      - name: 💾 Guardar y Actualizar Calendario
+
+      - name: 💾 Guardar Plan en el repositorio
         run: |
-          git config --global user.name "IA Strategic Planner"
-          git config --global user.email "planner@andremolli.com"
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
           git add plan-semanal.json
-          git commit -m "📅 Plan automático generado para la semana" || echo "Sin cambios"
+          git commit -m "🤖 Auto-generado: Nuevo Plan Semanal" || echo "Sin cambios"
           git push
+
+      - name: 🎨 Renderizar Póster del Plan
+        run: |
+          npx remotion still src/index.jsx PlanSemanal plan_generado.png --props=plan-semanal.json
+          
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Plan-Semanal-Andre-Molli
+          path: plan_generado.png
