@@ -2,37 +2,30 @@ import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const enfoque = process.env.ENFOQUE_PLAN || "Fuerza y Estabilidad";
 
-async function generar() {
-  // 1. Leer el Cerebro (La Biblia)
+async function generarPlan() {
   const cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8');
-  
-  // 2. Obtener el mes actual para que la IA sepa dónde mirar
-  const mesActual = new Date().toLocaleString('es-ES', { month: 'long' });
-  const anioActual = new Date().getFullYear();
 
-  // 3. El prompt ahora es dinámico y extrae la info del Cerebro
-  const prompt = `Eres la Directora de Estrategia de Andre Molli. 
-  Hoy es un domingo de ${mesActual} de ${anioActual}.
-
-  CONTEXTO DE MARCA:
+  const prompt = `Eres el Estratega Deportivo Jefe de Andre Molli.
+  Absorbe nuestra identidad y metáforas universales (Cimientos, Fluidez, Cadena, Equilibrio):
   ${cerebroMarca}
 
-  INSTRUCCIÓN DE ENFOQUE:
-  1. Busca en la sección "Ciclo Anual de Enfoques" de la Biblia qué toca en el mes de ${mesActual}.
-  2. Si existe un enfoque manual prioritario ("${process.env.ENFOQUE_SEMANAL || 'ninguno'}"), úsalo.
-  3. Si no hay enfoque manual, usa el que corresponde al mes de ${mesActual} según la Biblia.
-
   TAREA:
-  Diseña la planificación de contenidos de Lunes a Domingo. 
-  Asegúrate de que cada post use nuestras metáforas universales y el tono de Andre.
+  Crea un plan de entrenamiento semanal estratégico con el enfoque: "${enfoque}".
+  
+  REGLAS:
+  - Genera 7 días. Algunos días pueden ser "Descanso Activo".
+  - Cada día debe tener un "tipo" que coincida con uno de nuestros gráficos (cimientos, fluidez, cadena, estructura_grid).
+  - Incluye un pequeño "tip" motivador en cada día basado en nuestra filosofía (inercia, aterrizajes, control).
 
-  Devuelve ÚNICAMENTE un objeto JSON válido:
+  Devuelve ÚNICAMENTE un objeto JSON válido con esta estructura:
   {
-    "enfoque": "El tema detectado en la Biblia para este mes",
+    "enfoque_semanal": "${enfoque}",
     "dias": [
-      {"dia": "Lunes", "tipo": "Reel", "titulo": "...", "descripcion": "..."},
-      ... hasta el Domingo
+      { "dia": "Lunes", "titulo": "Core y Raíces", "tipo": "cimientos", "tip": "..." },
+      { "dia": "Martes", "titulo": "...", "tipo": "...", "tip": "..." },
+      ... (hasta Domingo)
     ]
   }`;
 
@@ -43,12 +36,14 @@ async function generar() {
     });
 
     let texto = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
-    fs.writeFileSync('plan-semanal.json', texto);
-    
-    console.log(`✅ Plan generado exitosamente para ${mesActual}.`);
+    let planData = JSON.parse(texto);
+
+    // Guardamos el JSON que leerá Remotion
+    fs.writeFileSync('plan-semanal.json', JSON.stringify(planData, null, 2));
+    console.log("✅ Planificación Semanal generada.");
   } catch (error) {
-    console.error("Error en la planificación estratégica:", error);
+    console.error("❌ Error Crítico en Plan:", error);
   }
 }
 
-generar();
+generarPlan();
