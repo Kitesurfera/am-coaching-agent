@@ -3,45 +3,52 @@
   "dias": [
     {
       "dia": "Lunes",
-      "titulo": "Fuerza desde los Cimientos",
-      "tipo": "cimientos",
-      "tip": "Cada repetición es una oportunidad para enraizarte. Siente cómo la fuerza nace desde el suelo, construyendo tus Cimientos sobre una base sólida y consciente."
+      "titulo": "Cimientos de Fuerza: Raíces Profundas",
+      "tipo": "Reel",
+      "grafico_tipo": "cimientos",
+      "tip": "La verdadera fuerza nace de una base inquebrantable. Hoy, enraizamos cada movimiento para construir un cuerpo sólido desde el suelo hacia arriba. 🧱⚡"
     },
     {
       "dia": "Martes",
-      "titulo": "La Cadena de Poder Posterior",
-      "tipo": "cadena",
-      "tip": "Tu cuerpo es una Cadena de eslabones interconectados. Enfócate en la activación conjunta de tu cadena posterior, desde los isquios hasta los dorsales, para un movimiento fluido y potente."
+      "titulo": "La Cadena Maestra: Impulso Posterior",
+      "tipo": "Carrusel",
+      "grafico_tipo": "cadena",
+      "tip": "Cada eslabón cuenta en la cadena de tu movimiento. Despierta el poder de tu cadena posterior, el motor silencioso que te impulsa con propósito. 🧬💪"
     },
     {
       "dia": "Miércoles",
-      "titulo": "Equilibrio entre Tensión y Empuje",
-      "tipo": "equilibrio",
-      "tip": "Domina el Equilibrio entre aplicar la tensión máxima y relajar lo necesario. El control en el empuje no es solo fuerza, es una danza consciente de tu cuerpo en el espacio."
+      "titulo": "El Equilibrio de la Fuerza: Movilidad Consciente",
+      "tipo": "Reel",
+      "grafico_tipo": "fluidez",
+      "tip": "El cuerpo sabio sabe cuándo aplicar tensión y cuándo fluir. Hoy, honra el equilibrio con movimientos conscientes que nutren y preparan tus articulaciones. 🤍✨"
     },
     {
       "dia": "Jueves",
-      "titulo": "Descanso Activo: Fluidez Restauradora",
-      "tipo": "fluidez",
-      "tip": "Hoy, deja que tu cuerpo recupere su Fluidez natural. Un movimiento suave y controlado permite que la energía circule, preparando tus articulaciones para la próxima descarga de fuerza."
+      "titulo": "Impulso y Atracción: Fuerza Superior Integral",
+      "tipo": "Carrusel",
+      "grafico_tipo": "cadena",
+      "tip": "Tu cuerpo es una intrincada red de conexiones. Al dominar el empuje y la tracción, sincronizas cada fibra, fortaleciendo la cadena completa de tu tronco. 🧬⚡"
     },
     {
       "dia": "Viernes",
-      "titulo": "Fuerza Explosiva con Fluidez",
-      "tipo": "fluidez",
-      "tip": "Genera potencia con una Fluidez impecable. Gestiona la inercia en cada despegue y perfecciona tus aterrizajes para proteger tus articulaciones y maximizar cada movimiento."
+      "titulo": "Fuerza Dinámica: Flujo de Potencia Controlada",
+      "tipo": "Reel",
+      "grafico_tipo": "fluidez",
+      "tip": "La fuerza no es solo peso, es el control magistral sobre la velocidad. Hoy, dale vida a tu poder con movimientos que fluyen, controlando cada fase con intención. 🌊⚡"
     },
     {
       "dia": "Sábado",
-      "titulo": "Conexión Total de la Cadena Muscular",
-      "tipo": "cadena",
-      "tip": "Desafía tu Cadena completa con movimientos compuestos. Siente cómo cada músculo es un eslabón vital, trabajando en perfecta armonía para mover el peso con propósito."
+      "titulo": "Fuerza Aplicada: El Equilibrio en Acción",
+      "tipo": "Carrusel",
+      "grafico_tipo": "estructura_grid",
+      "tip": "Desafía tus límites en todos los planos. La fuerza con propósito te permite dominar tu cuerpo en cualquier espacio, encontrando estabilidad en el movimiento complejo. 🧱🤸"
     },
     {
       "dia": "Domingo",
-      "titulo": "Re-equilibrio y Preparación",
-      "tipo": "equilibrio",
-      "tip": "Encuentra el Equilibrio perfecto entre mente y cuerpo. El descanso es tan crucial como el entrenamiento; permite que tu fuerza se asiente y tu energía se recargue para la semana que viene."
+      "titulo": "Descanso Inteligente: Recarga tus Cimientos",
+      "tipo": "Descanso",
+      "grafico_tipo": "cimientos",
+      "tip": "Incluso los cimientos más robustos necesitan tiempo para asentarse. El descanso no es inactividad, es la fase crucial donde tu fuerza se consolida para seguir creciendo. 🤍🧘"
     }
   ]
 }
