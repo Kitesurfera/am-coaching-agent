@@ -4,20 +4,24 @@ import fs from 'fs';
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const renderUrl = process.env.RENDER_URL;
 const token = process.env.TRAINER_TOKEN;
+
 const athleteId = process.env.ATHLETE_ID;
-const macro = process.env.MACRO_CICLO;
-const micro = process.env.MICRO_CICLO;
+const macroName = process.env.MACRO_NOMBRE || "General";
+const microName = process.env.MICRO_NOMBRE || "General";
+const microId = process.env.MICRO_ID || null;
+const dias = parseInt(process.env.DIAS) || 1;
+const foco = process.env.FOCO || "Mantenimiento y técnica";
 
 async function generarRutina() {
   const cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8');
 
-  // 🔥 Lógica dinámica: ¿Tiene el atleta un ciclo activo?
-  let contextoCiclo = "";
-  if (macro === "no_asignado" || micro === "no_asignado") {
-    contextoCiclo = `- Fase actual: No asignada (Fuera de ciclo o Transición).
-  - Objetivo: Crea una rutina de Mantenimiento General o Evaluación de estado físico. Prioriza la técnica pura, la movilidad articular y la prevención de lesiones sin sobrecargar el sistema nervioso.`;
-  } else {
-    contextoCiclo = `- Macrociclo: ${macro}\n  - Microciclo: ${micro}`;
+  // Generamos el array de fechas en Node.js para estar 100% seguros
+  let fechas = [];
+  let hoy = new Date();
+  for(let i=0; i<dias; i++){
+      let d = new Date(hoy);
+      d.setDate(hoy.getDate() + i);
+      fechas.push(d.toISOString().split('T')[0]);
   }
 
   const prompt = `Eres el Head Coach y Director de Rendimiento de Andre Molli.
@@ -25,27 +29,32 @@ async function generarRutina() {
   ${cerebroMarca}
 
   TAREA:
-  Genera una sesión de entrenamiento (rutina) de Alto Rendimiento para nuestro atleta.
-  Contexto del entrenamiento:
-  ${contextoCiclo}
+  Debes crear un bloque de entrenamiento de ${dias} días para nuestro atleta.
+  
+  CONTEXTO ACTUAL:
+  - Fase Macrociclo: ${macroName}
+  - Fase Microciclo: ${microName}
+  - Foco técnico solicitado por Andre: ${foco}
 
   REGLAS:
-  1. Aplica nuestros conceptos estéticos y metáforas en la descripción y las notas de los ejercicios.
-  2. Debe ser un reto realista pero muy técnico, adecuado a la fase especificada arriba.
-  3. Formato estricto para base de datos.
+  1. Aplica nuestros conceptos estéticos en los nombres de las sesiones y ejercicios.
+  2. Crea progresión si son varios días (no repitas la misma rutina exacta).
+  3. Formato estricto. Devuelve ÚNICAMENTE un objeto JSON con una propiedad "workouts" que contenga un array de ${dias} objetos. No incluyas fechas ni IDs en el JSON, solo esto:
 
-  Devuelve ÚNICAMENTE un objeto JSON válido con esta estructura:
   {
-    "athlete_id": "${athleteId}",
-    "title": "Nombre potente de la sesión (ej: CIMIENTOS DE IMPACTO)",
-    "description": "Breve descripción motivacional y técnica de la sesión.",
-    "exercises": [
-      { "name": "Nombre del ejercicio", "sets": 3, "reps": "10", "notes": "Foco en la absorción del aterrizaje" },
-      { "name": "Otro ejercicio", "sets": 4, "reps": "45 seg", "notes": "Mantén la cadena estable" }
+    "workouts": [
+      {
+        "title": "DÍA 1: [Nombre Potente]",
+        "description": "...",
+        "notes": "...",
+        "exercises": [ { "name": "...", "sets": 3, "reps": "10", "notes": "..." } ]
+      }
+      // ... continuar hasta ${dias} rutinas
     ]
   }`;
 
   try {
+    console.log(`🧠 Pensando bloque de ${dias} días. Foco: ${foco}...`);
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
@@ -54,18 +63,26 @@ async function generarRutina() {
     let texto = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
     let rutinaData = JSON.parse(texto);
     
-    // Le ponemos la fecha de hoy para que aparezca activa en la App
-    rutinaData.date = new Date().toISOString().split('T')[0];
+    // Inyectamos las fechas, el atleta y el ID del microciclo (si existe) a cada rutina generada
+    let finalWorkouts = rutinaData.workouts.map((w, index) => {
+        return {
+            ...w,
+            athlete_id: athleteId,
+            date: fechas[index],
+            microciclo_id: microId === "" ? null : microId
+        };
+    });
 
-    console.log("🎬 Rutina generada por la IA. Inyectando en la Base de Datos...");
+    console.log(`🎬 Array de ${finalWorkouts.length} rutinas listo. Inyectando en Render (Bulk)...`);
 
-    const apiRes = await fetch(`${renderUrl}/api/workouts`, {
+    // Usamos la ruta /workouts/bulk que tu FastAPI ya tiene configurada para inyectar múltiples
+    const apiRes = await fetch(`${renderUrl}/api/workouts/bulk`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(rutinaData)
+        body: JSON.stringify({ workouts: finalWorkouts })
     });
 
     if (!apiRes.ok) {
@@ -73,7 +90,7 @@ async function generarRutina() {
         throw new Error(`Error en Render: ${apiRes.status} - ${errorText}`);
     }
 
-    console.log("✅ Rutina inyectada y asignada al atleta con éxito.");
+    console.log("✅ Bloque completo inyectado en MongoDB.");
   } catch (error) {
     console.error("❌ Error Crítico:", error);
     process.exit(1); 
