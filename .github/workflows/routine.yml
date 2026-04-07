@@ -1,0 +1,40 @@
+name: Asignar Rutina IA
+
+on:
+  workflow_dispatch:
+    inputs:
+      athlete_id:
+        description: 'ID del Atleta'
+        required: true
+      macro_ciclo:
+        description: 'Fase del Macrociclo'
+        required: true
+      micro_ciclo:
+        description: 'Tipo de Microciclo'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  crear-y-asignar:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true 
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          
+      - run: npm install
+      
+      - name: 🧠 IA Coach & Inyección en DB
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          RENDER_URL: "https://fit-tracker-backend-rtx2.onrender.com"
+          TRAINER_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzEwMjFiYzctMjA5ZS00OWFiLWE4MWItNWIzNTA4ZjU5NDI0Iiwicm9sZSI6InRyYWluZXIiLCJleHAiOjQ5Mjg5MjI1NTF9.pLGlXX5i4aTwuPhM8Xklepc6-3Jc8wrjweoMjeKanb4"
+          ATHLETE_ID: ${{ github.event.inputs.athlete_id }}
+          MACRO_CICLO: ${{ github.event.inputs.macro_ciclo }}
+          MICRO_CICLO: ${{ github.event.inputs.micro_ciclo }}
+        run: node generate-routine.js
