@@ -32,17 +32,17 @@ jobs:
           ENFOQUE_PLAN: ${{ github.event.inputs.enfoque }}
         run: node generate-plan.js
 
-      - name: 💾 Guardar Plan en el repositorio
-        run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-          git add plan-semanal.json
-          git commit -m "🤖 Auto-generado: Nuevo Plan Semanal" || echo "Sin cambios"
-          git push
-
       - name: 🎨 Renderizar Póster del Plan
         run: |
           npx remotion still src/index.jsx PlanSemanal plan_generado.png --props=plan-semanal.json
+
+      - name: 💾 Guardar Plan y Póster en el repositorio
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add plan-semanal.json plan_generado.png
+          git commit -m "🤖 Auto-generado: Nuevo Plan Semanal y Póster visual" || echo "Sin cambios"
+          git push
           
       - uses: actions/upload-artifact@v4
         with:
