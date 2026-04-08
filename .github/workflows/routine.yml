@@ -12,6 +12,9 @@ on:
       micro_nombre:
         description: 'Nombre del Microciclo'
         required: false
+      micro_tipo:
+        description: 'Tipo de Microciclo (Ajuste, Carga, Impacto...)'
+        required: false
       micro_id:
         description: 'ID del Microciclo (DB)'
         required: false
@@ -47,6 +50,7 @@ jobs:
           ATHLETE_ID: ${{ github.event.inputs.athlete_id }}
           MACRO_NOMBRE: ${{ github.event.inputs.macro_nombre }}
           MICRO_NOMBRE: ${{ github.event.inputs.micro_nombre }}
+          MICRO_TIPO: ${{ github.event.inputs.micro_tipo }}
           MICRO_ID: ${{ github.event.inputs.micro_id }}
           DIAS: ${{ github.event.inputs.dias }}
           FOCO: ${{ github.event.inputs.foco }}
