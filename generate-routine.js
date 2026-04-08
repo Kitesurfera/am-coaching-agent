@@ -8,15 +8,14 @@ const token = process.env.TRAINER_TOKEN;
 const athleteId = process.env.ATHLETE_ID;
 const macroName = process.env.MACRO_NOMBRE || "General";
 const microName = process.env.MICRO_NOMBRE || "General";
+const microTipo = (process.env.MICRO_TIPO || "General").toLowerCase(); // Capturamos el TIPO
 const microId = process.env.MICRO_ID || null;
 const dias = parseInt(process.env.DIAS) || 1;
 const foco = process.env.FOCO || "Mantenimiento y técnica";
 
 async function generarRutina() {
-  // 1. Cargamos la TEORÍA (Tu archivo Markdown)
   const cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8');
 
-  // 2. Cargamos la PRÁCTICA (Las últimas 5 sesiones manuales de Andre)
   let ejemplosPracticos = "";
   try {
       const memRes = await fetch(`${renderUrl}/api/brain/memory/examples`, {
@@ -25,14 +24,13 @@ async function generarRutina() {
       if (memRes.ok) {
           const memData = await memRes.json();
           if (memData.examples && memData.examples.length > 0) {
-              ejemplosPracticos = `\n\n### EJEMPLOS REALES DE ANDRE (MACHINE LEARNING):\nAnaliza estas rutinas escritas recientemente por Andre. Fíjate en cómo escribe las notas, cómo agrupa los ejercicios y la carga de trabajo:\n${JSON.stringify(memData.examples, null, 2)}`;
+              ejemplosPracticos = `\n\n### EJEMPLOS REALES DE ANDRE (MACHINE LEARNING):\nAnaliza estas rutinas escritas recientemente por Andre. Fíjate en cómo escribe las notas y cómo agrupa los ejercicios:\n${JSON.stringify(memData.examples, null, 2)}`;
           }
       }
   } catch(e) {
-      console.log("No se pudieron cargar ejemplos de la DB, usando solo el ADN base.");
+      console.log("Usando ADN base sin memoria reciente.");
   }
 
-  // 3. Generamos fechas
   let fechas = [];
   let hoy = new Date();
   for(let i=0; i<dias; i++){
@@ -41,7 +39,16 @@ async function generarRutina() {
       fechas.push(d.toISOString().split('T')[0]);
   }
 
-  // 4. El Súper-Prompt
+  // REGLAS DINÁMICAS BASADAS EN EL TIPO DE CICLO
+  const reglasPeriodizacion = `
+  REGLAS DE PERIODIZACIÓN OBLIGATORIAS (Basadas en el tipo de microciclo: ${microTipo.toUpperCase()}):
+  - Si es "ajuste" o "descarga": Prioriza la técnica pura, la movilidad articular, la 'Fluidez' y ejercicios isométricos. Reduce el volumen a la mitad. CERO impacto articular y muy baja fatiga del Sistema Nervioso Central (SNC).
+  - Si es "carga" o "desarrollo": Aumenta el volumen total (sets x reps). Construye los 'Cimientos'. Enfócate en fuerza estructural y control excéntrico pesado. Fatiga media-alta.
+  - Si es "impacto" o "choque": Alta intensidad, baja duración. Foco en transferencia rápida, aterrizajes inerciales y explosividad. Fatiga del SNC muy alta. Las notas deben exigir máxima concentración.
+  - Si es "competición" o "tapering": Volumen bajísimo pero intensidad máxima (activación neural). Movimientos muy específicos del deporte. Priorizar velocidad y agudeza mental sobre el cansancio físico.
+  - Si es "general": Mantén un equilibrio progresivo clásico.
+  `;
+
   const prompt = `Eres el Head Coach y Director de Rendimiento de Andre Molli.
   
   Aquí está nuestra Biblia de Marca (Teoría):
@@ -54,18 +61,21 @@ async function generarRutina() {
   CONTEXTO ACTUAL:
   - Fase Macrociclo: ${macroName}
   - Fase Microciclo: ${microName}
-  - Foco técnico solicitado: ${foco}
+  - TIPO DE MICROCICLO: ${microTipo.toUpperCase()}
+  - Foco técnico solicitado por Andre: ${foco}
 
-  REGLAS ESTRICTAS:
-  1. Si hay ejemplos reales, IMITA su estilo de redacción en los campos "notes" y la forma de nombrar ejercicios.
-  2. Aplica las metáforas de nuestra Biblia (Fluidez, Cimientos, Cadena) en las descripciones.
-  3. Formato estricto. Devuelve ÚNICAMENTE un objeto JSON con la propiedad "workouts" conteniendo un array de ${dias} objetos.
+  ${reglasPeriodizacion}
+
+  REGLAS ESTRICTAS DE FORMATO:
+  1. Si hay ejemplos reales, IMITA su estilo de redacción.
+  2. Aplica las metáforas de nuestra Biblia en las descripciones, pero respetando las reglas de volumen e intensidad del Tipo de Microciclo.
+  3. Devuelve ÚNICAMENTE un objeto JSON válido con la propiedad "workouts" conteniendo un array de ${dias} objetos.
 
   ESTRUCTURA JSON ESPERADA:
   {
     "workouts": [
       {
-        "title": "DÍA 1: [Nombre Potente]",
+        "title": "DÍA 1: [Nombre Potente relacionado con la fase y el foco]",
         "description": "...",
         "notes": "...",
         "exercises": [ { "name": "...", "sets": 3, "reps": "10", "notes": "..." } ]
@@ -74,7 +84,7 @@ async function generarRutina() {
   }`;
 
   try {
-    console.log(`🧠 Pensando bloque de ${dias} días combinando Teoría + Machine Learning...`);
+    console.log(`🧠 Pensando bloque de ${dias} días para fase de ${microTipo.toUpperCase()}...`);
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
@@ -89,11 +99,11 @@ async function generarRutina() {
             athlete_id: athleteId,
             date: fechas[index],
             microciclo_id: microId === "" ? null : microId,
-            is_ai: true // Vital para que no aprenda de sus propios textos
+            is_ai: true 
         };
     });
 
-    console.log(`🎬 Inyectando ${finalWorkouts.length} rutinas hiper-personalizadas en Render...`);
+    console.log(`🎬 Inyectando ${finalWorkouts.length} rutinas de ${microTipo.toUpperCase()} en Render...`);
 
     const apiRes = await fetch(`${renderUrl}/api/workouts/bulk`, {
         method: 'POST',
