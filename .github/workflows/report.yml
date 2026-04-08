@@ -1,10 +1,9 @@
 name: Generar Informe Mensual
-
 on:
   workflow_dispatch:
     inputs:
       athlete_id:
-        description: 'ID del Atleta'
+        description: 'IDs de Atletas (separados por coma)'
         required: true
 
 permissions:
@@ -14,43 +13,22 @@ jobs:
   generar-cronica:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del código
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Importante para poder hacer push después
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Instalar dependencias
-        run: |
-          npm install @google/generative-ai
-
-      - name: Ejecutar Agente Cronista
-        run: node generate-report.js
+      - run: npm install @google/generative-ai
+      - run: node generate-report.js
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ATHLETE_ID: ${{ github.event.inputs.athlete_id }}
           RENDER_URL: ${{ secrets.RENDER_URL }}
           TRAINER_TOKEN: ${{ secrets.TRAINER_TOKEN }}
-
-      - name: Publicar informe en el repo
+      - name: Publicar todos los informes
         run: |
           git config --global user.name "Agente Cronista"
           git config --global user.email "agente@andre-molli.com"
-          
-          # 1. Añadimos solo el informe
-          git add informe-whatsapp.txt
-          
-          # 2. Hacemos el commit
-          git commit -m "Nuevo informe generado para el atleta ${{ github.event.inputs.athlete_id }}" || echo "Sin cambios"
-          
-          # 3. ¡ESTA ES LA CLAVE!: Limpiamos cualquier otro cambio (como el package-lock.json)
-          # para que Git no se queje al hacer el pull
-          git checkout . 
-          
-          # 4. Traemos cambios remotos y subimos
+          git add informe-*.txt
+          git commit -m "🤖 Crónicas masivas generadas" || echo "Sin cambios"
           git pull --rebase origin main
           git push origin main
