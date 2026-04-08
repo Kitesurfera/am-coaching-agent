@@ -40,7 +40,17 @@ jobs:
         run: |
           git config --global user.name "Agente Cronista"
           git config --global user.email "agente@andre-molli.com"
+          
+          # 1. Añadimos solo el informe
           git add informe-whatsapp.txt
-          git commit -m "Nuevo informe generado para el atleta ${{ github.event.inputs.athlete_id }}" || echo "Sin cambios que commitear"
+          
+          # 2. Hacemos el commit
+          git commit -m "Nuevo informe generado para el atleta ${{ github.event.inputs.athlete_id }}" || echo "Sin cambios"
+          
+          # 3. ¡ESTA ES LA CLAVE!: Limpiamos cualquier otro cambio (como el package-lock.json)
+          # para que Git no se queje al hacer el pull
+          git checkout . 
+          
+          # 4. Traemos cambios remotos y subimos
           git pull --rebase origin main
           git push origin main
