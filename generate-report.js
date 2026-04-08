@@ -3,72 +3,51 @@ import fs from 'fs';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-async function generarInforme() {
+async function generarInformes() {
   try {
-    const athleteId = process.env.ATHLETE_ID;
+    const rawIds = process.env.ATHLETE_ID; // Recibe "id1,id2,id3"
+    const athleteIds = rawIds.split(',').map(id => id.trim());
     const renderUrl = process.env.RENDER_URL || "https://fit-tracker-backend-rtx2.onrender.com";
     const trainerToken = process.env.TRAINER_TOKEN;
     const cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8');
 
-    console.log(`🚀 Iniciando proceso para atleta: ${athleteId}`);
-    
-    // --- DEBUG: Verificamos el token sin exponerlo ---
-    if (!trainerToken) {
-        throw new Error("El TRAINER_TOKEN no está llegando desde GitHub Secrets.");
-    }
-    console.log(`🔑 Token detectado (empieza por: ${trainerToken.substring(0, 10)}...)`);
-    // -------------------------------------------------
+    console.log(`🚀 Iniciando proceso por lotes para: ${athleteIds.length} atletas`);
 
-    console.log(`🔗 Conectando a: ${renderUrl}/api/analytics/monthly-summary/${athleteId}`);
+    for (const id of athleteIds) {
+        try {
+            console.log(`--- Procesando: ${id} ---`);
+            const res = await fetch(`${renderUrl}/api/analytics/monthly-summary/${id}`, {
+                headers: { 'Authorization': `Bearer ${trainerToken.trim()}` }
+            });
 
-    const res = await fetch(`${renderUrl}/api/analytics/monthly-summary/${athleteId}`, {
-        method: 'GET',
-        headers: { 
-            'Authorization': `Bearer ${trainerToken.trim()}`,
-            'Content-Type': 'application/json'
+            if (!res.ok) {
+                console.error(`⚠️ Fallo en Render para ${id}: ${res.status}`);
+                continue;
+            }
+
+            const data = await res.json();
+            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+
+            const prompt = `Eres la Cronista de Andre Molli. Escribe un mensaje de WhatsApp para ${data.athlete_name}. 
+            Datos del mes: ${data.total_completed} entrenos, fatiga media ${data.avg_fatigue}/5. 
+            Filosofía: ${cerebroMarca}. 
+            Máximo 40 palabras. Usa una metáfora de marca (Cimientos, Fluidez, Cadena o Equilibrio).`;
+
+            const result = await model.generateContent(prompt);
+            const text = result.response.text();
+
+            // Guardamos con nombre único para que no se pisen
+            fs.writeFileSync(`informe-${id}.txt`, text.trim());
+            console.log(`✅ Informe de ${data.athlete_name} listo.`);
+            
+        } catch (err) {
+            console.error(`❌ Error con atleta ${id}:`, err.message);
         }
-    });
-
-    if (!res.ok) {
-        // Si falla, intentamos leer el motivo del error del servidor
-        const errorText = await res.text();
-        throw new Error(`Error en Render: ${res.status} - ${errorText}`);
     }
-    
-    const data = await res.json();
-    console.log(`✅ Datos de ${data.athlete_name} recibidos.`);
-
-    const model = genAI.getGenerativeModel({ 
-        model: "gemini-3-flash-preview" 
-    });
-
-    const prompt = `Eres la Cronista de Andre Molli. 
-    Escribe un mensaje de WhatsApp para ${data.athlete_name}. 
-    Datos del mes: ${data.total_completed} entrenos completados, fatiga media de ${data.avg_fatigue}/5. 
-    Tests recientes: ${JSON.stringify(data.recent_tests)}.
-    
-    Filosofía de marca:
-    ${cerebroMarca}
-    
-    TAREA:
-    - Máximo 40 palabras.
-    - Usa una metáfora de nuestra Biblia (Cimientos, Fluidez, Cadena o Equilibrio).
-    - Tono: Profesional, motivador y exclusivo.`;
-
-    console.log("🤖 Generando contenido con Gemini 3 Flash Preview...");
-    
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
-    
-    if (!text) throw new Error("La IA no generó contenido.");
-
-    fs.writeFileSync('informe-whatsapp.txt', text.trim());
-    console.log("✅ Informe guardado con éxito.");
-
   } catch (error) {
-    console.error("❌ Error Crítico:", error.message);
+    console.error("❌ Error Maestro:", error.message);
     process.exit(1);
   }
 }
 
-generarInforme();
+generarInformes();
