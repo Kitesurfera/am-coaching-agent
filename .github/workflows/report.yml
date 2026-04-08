@@ -24,11 +24,15 @@ jobs:
           ATHLETE_ID: ${{ github.event.inputs.athlete_id }}
           RENDER_URL: ${{ secrets.RENDER_URL }}
           TRAINER_TOKEN: ${{ secrets.TRAINER_TOKEN }}
-      - name: Publicar todos los informes
+      - name: Guardar Informes en GitHub
         run: |
           git config --global user.name "Agente Cronista"
-          git config --global user.email "agente@andre-molli.com"
+          git config --global user.email "bot@andremolli.com"
+          # Añadimos solo los informes de texto
           git add informe-*.txt
-          git commit -m "🤖 Crónicas masivas generadas" || echo "Sin cambios"
+          git commit -m "🤖 Crónicas masivas generadas" || echo "No hay cambios nuevos"
+          # 🪄 LA MAGIA: Descartamos cualquier archivo basura que haya tocado npm
+          git restore .
+          # Ahora el rebase funcionará como la seda
           git pull --rebase origin main
-          git push origin main
+          git push
