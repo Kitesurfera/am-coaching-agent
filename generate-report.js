@@ -6,31 +6,38 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 async function generarInforme() {
   try {
     const athleteId = process.env.ATHLETE_ID;
-    
-    // Si process.env.RENDER_URL está vacío, usamos tu URL real directamente
     const renderUrl = process.env.RENDER_URL || "https://fit-tracker-backend-rtx2.onrender.com";
-    
     const trainerToken = process.env.TRAINER_TOKEN;
     const cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8');
 
     console.log(`🚀 Iniciando proceso para atleta: ${athleteId}`);
-    console.log(`🔗 Usando URL de Render: ${renderUrl}`);
+    
+    // --- DEBUG: Verificamos el token sin exponerlo ---
+    if (!trainerToken) {
+        throw new Error("El TRAINER_TOKEN no está llegando desde GitHub Secrets.");
+    }
+    console.log(`🔑 Token detectado (empieza por: ${trainerToken.substring(0, 10)}...)`);
+    // -------------------------------------------------
 
+    console.log(`🔗 Conectando a: ${renderUrl}/api/analytics/monthly-summary/${athleteId}`);
 
-    // 1. Petición a Render
     const res = await fetch(`${renderUrl}/api/analytics/monthly-summary/${athleteId}`, {
+        method: 'GET',
         headers: { 
             'Authorization': `Bearer ${trainerToken.trim()}`,
             'Content-Type': 'application/json'
         }
     });
 
-    if (!res.ok) throw new Error(`Error en Render: ${res.status}`);
+    if (!res.ok) {
+        // Si falla, intentamos leer el motivo del error del servidor
+        const errorText = await res.text();
+        throw new Error(`Error en Render: ${res.status} - ${errorText}`);
+    }
+    
     const data = await res.json();
     console.log(`✅ Datos de ${data.athlete_name} recibidos.`);
 
-    // 2. CONFIGURACIÓN DEL MODELO (Basado en tu captura)
-    // Usamos el ID exacto que aparece bajo el nombre en tu imagen
     const model = genAI.getGenerativeModel({ 
         model: "gemini-3-flash-preview" 
     });
@@ -46,11 +53,10 @@ async function generarInforme() {
     TAREA:
     - Máximo 40 palabras.
     - Usa una metáfora de nuestra Biblia (Cimientos, Fluidez, Cadena o Equilibrio).
-    - Tono: Profesional, motivador y exclusivo. No uses demasiados emojis.`;
+    - Tono: Profesional, motivador y exclusivo.`;
 
     console.log("🤖 Generando contenido con Gemini 3 Flash Preview...");
     
-    // 3. Generación
     const result = await model.generateContent(prompt);
     const text = result.response.text();
     
