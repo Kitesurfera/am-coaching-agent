@@ -3,62 +3,76 @@ import fs from 'fs';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const tema = process.env.TEMA_CARRUSEL || "Movimiento Eficiente";
-const pexelsKey = process.env.PEXELS_API_KEY; // La nueva llave de Pexels
+const pexelsKey = process.env.PEXELS_API_KEY;
+const overlayText = process.env.OVERLAY_TEXT === 'true';
+const imgFile = process.env.IMG_FILE;
 
 async function generar() {
-  const cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8');
+  let cerebroMarca = "";
+  try { cerebroMarca = fs.readFileSync('brand-brain.md', 'utf-8'); } catch(e) {}
 
-  // El prompt ahora exige palabras clave de búsqueda específicas
-  const prompt = `Eres la Directora de Arte y Estrategia de Andre Molli. 
-  Absorbe nuestra identidad y metáforas universales (Cimientos, Fluidez, Cadena, Equilibrio):
-  ${cerebroMarca}
+  // Revisar si el usuario subió imágenes propias
+  let customImages = [];
+  let numSlides = 4; // Por defecto 4
+  if (imgFile && imgFile !== 'none') {
+      try {
+          const data = fs.readFileSync(imgFile, 'utf-8');
+          customImages = JSON.parse(data);
+          numSlides = customImages.length > 0 ? customImages.length : 4;
+      } catch(e) { console.log("⚠️ No se encontraron imágenes locales, usando Pexels."); }
+  }
+
+  // Si no queremos texto, obligamos a Gemini a dejar los campos vacíos
+  const reglaTexto = overlayText 
+    ? "Genera títulos potentes y contenido persuasivo." 
+    : "IMPORTANTE: El usuario no quiere texto sobre la imagen. Los campos 'titulo' y 'contenido' DEBEN ser strings vacíos (\"\").";
+
+  const prompt = `Eres la Directora de Arte de Andre Molli. 
+  Identidad: ${cerebroMarca}
 
   TAREA:
-  Diseña un carrusel de Instagram de 4 diapositivas sobre: "${tema}".
+  Diseña un carrusel de Instagram de ${numSlides} diapositivas sobre: "${tema}".
   
-  REGLAS DE DISEÑO:
-  1. Cada diapositiva debe tener un elemento gráfico *aesthetic* (ej: "cimientos", "fluidez", "cadena", "equilibrio", "estructura_grid").
-  2. Crea un 'search_query' EN INGLÉS para buscar una imagen de fondo. Debe ser específico para atletas de alto impacto (ej: "female athlete core training", "woman balance board", "female athlete explosive landing", "woman kitesurfing fitness"). Siempre mujeres.
+  REGLAS:
+  1. ${reglaTexto}
+  2. Crea un 'search_query' EN INGLÉS para buscar fondo de alto impacto (ej: "female athlete explosive landing").
 
-  Devuelve ÚNICAMENTE un array JSON válido:
+  Devuelve ÚNICAMENTE un array JSON válido de ${numSlides} elementos:
   [
-    {"titulo": "Gancho", "contenido": "...", "grafico_tipo": "estructura_grid", "search_query": "female athlete power stance"},
-    {"titulo": "Idea 1", "contenido": "...", "grafico_tipo": "cimientos", "search_query": "woman lower body stability"},
-    {"titulo": "Idea 2", "contenido": "...", "grafico_tipo": "fluidez", "search_query": "female dynamic movement"},
-    {"titulo": "CTA", "contenido": "...", "grafico_tipo": "estructura_grid", "search_query": "female athlete portrait dark"}
+    {"titulo": "...", "contenido": "...", "grafico_tipo": "estructura_grid", "search_query": "female athlete power stance"}
   ]`;
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-    });
-
-    let texto = response.text.replace(/```json/g, '').replace(/```/g, '').trim();
+    const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let texto = response.text().replace(/```json/g, '').replace(/```/g, '').trim();
     let slides = JSON.parse(texto);
 
-    console.log("🧠 IA ha definido la estructura. Buscando recursos visuales...");
+    console.log(`🧠 IA ha definido la estructura de ${numSlides} slides.`);
 
-    // Si tenemos la llave de Pexels, buscamos las imágenes
-    if (pexelsKey) {
-        for (let slide of slides) {
-            const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(slide.search_query)}&per_page=1&orientation=portrait`;
+    // Asignar imágenes (Propias o Pexels) y configuración de texto
+    for (let i = 0; i < slides.length; i++) {
+        slides[i].mostrar_texto = overlayText; // Le pasamos la bandera a Remotion
+        
+        if (customImages.length > 0) {
+            // Usamos las imágenes que subiste
+            slides[i].imagen_fondo = customImages[i] || customImages[0];
+        } else if (pexelsKey) {
+            // Usamos Pexels si no subiste nada
+            const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(slides[i].search_query)}&per_page=1&orientation=portrait`;
             const pexelsRes = await fetch(url, { headers: { Authorization: pexelsKey } });
-            
             if (pexelsRes.ok) {
                 const data = await pexelsRes.json();
-                // Guardamos la URL de la imagen en alta calidad
-                slide.imagen_fondo = data.photos?.[0]?.src?.large2x || null; 
-            } else {
-                slide.imagen_fondo = null;
+                slides[i].imagen_fondo = data.photos?.[0]?.src?.large2x || null; 
             }
         }
     }
 
     fs.writeFileSync('carrusel.json', JSON.stringify(slides, null, 2));
-    console.log("✅ JSON del carrusel aesthetic generado y empaquetado.");
+    console.log("✅ JSON del carrusel generado y empaquetado.");
   } catch (error) {
-    console.error("❌ Error Crítico:", error);
+    console.error("❌ Error:", error);
   }
 }
 
