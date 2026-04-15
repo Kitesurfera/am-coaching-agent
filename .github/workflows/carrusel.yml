@@ -7,6 +7,14 @@ on:
         description: 'Tema del carrusel'
         required: true
         default: 'Claves del movimiento'
+      overlay_text:
+        description: 'Imprimir texto en imágenes'
+        required: false
+        default: 'true'
+      img_file:
+        description: 'Archivo temporal de imágenes'
+        required: false
+        default: 'none'
 
 permissions:
   contents: write
@@ -24,11 +32,13 @@ jobs:
           node-version: '24'
       - run: npm install
       - run: npx remotion browser ensure
-      - name: 🧠 IA Guion
+      - name: 🧠 IA Guion y Procesamiento de Imágenes
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TEMA_CARRUSEL: ${{ github.event.inputs.tema }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          OVERLAY_TEXT: ${{ github.event.inputs.overlay_text }}
+          IMG_FILE: ${{ github.event.inputs.img_file }}
         run: node generate-carrusel.js
       - name: 🎨 Renderizar Imágenes
         run: |
